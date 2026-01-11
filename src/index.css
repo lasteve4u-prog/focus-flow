@@ -9,6 +9,12 @@
   color-scheme: light;
 }
 
+@layer base {
+  html {
+    font-family: "Zen Maru Gothic", sans-serif;
+  }
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -18,6 +24,7 @@ body {
   /* Honeydew */
   color: #14532d;
   /* green-900 */
+  /* Fallback or explicit override */
   font-family: 'Zen Maru Gothic', sans-serif;
 
   /* Subtle dot pattern */

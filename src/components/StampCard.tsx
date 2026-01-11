@@ -54,17 +54,9 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
                             <span className="absolute top-1 left-1 text-[10px] font-bold text-lime-400">{dayNum}</span>
 
                             {isEarned ? (
-                                <img
-                                    src="/zundamon-icon.png"
-                                    alt="Stamped"
-                                    className="w-4/5 h-4/5 object-contain animate-bounce-in drop-shadow-md"
-                                />
+                                <span className="text-3xl animate-bounce-in drop-shadow-md select-none">🫛</span>
                             ) : (
-                                <img
-                                    src="/zundamon-icon.png"
-                                    alt="Not Stamped"
-                                    className="w-4/5 h-4/5 object-contain grayscale opacity-20"
-                                />
+                                <span className="text-3xl opacity-20 filter grayscale select-none">🫛</span>
                             )}
                         </div>
                     );

@@ -7,16 +7,18 @@ interface HomeScreenProps {
     onAddEvent: (title: string, start: string, end: string) => void;
     onUpdateEvent: (event: Event) => void;
     onDeleteEvent: (id: string) => void;
-    onStartTask: (title: string, duration: number) => void;
+    onStartTask: (title: string, duration: number) => Promise<void>; // Updated to Promise
     onDeleteTask: (taskId: string) => void;
+    isAudioReady: boolean;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
     const [taskDuration, setTaskDuration] = useState(5);
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [isStarting, setIsStarting] = useState(false);
 
     const [sessionTitle, setSessionTitle] = useState('');
 
@@ -55,12 +57,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
         setEditingId(null);
     };
 
-    const handleStartTask = (e: React.FormEvent) => {
+    const handleStartTask = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (taskDuration > 0) {
-            // Play start sound
-            new Audio('/sounds/start.mp3').play().catch(e => console.log('Audio play failed', e));
-            onStartTask(sessionTitle || "集中タイム", taskDuration);
+        if (taskDuration > 0 && isAudioReady && !isStarting) {
+            setIsStarting(true);
+            try {
+                // Play start sound (NotificationContext will also warm up, but this is immediate user feedback if needed)
+                // Actually we rely on unlockAudio now.
+
+                // Call start task which will await unlock
+                await onStartTask(sessionTitle || "集中タイム", taskDuration);
+            } catch (e) {
+                console.error("Start task failed", e);
+                setIsStarting(false);
+            }
         }
     };
 
@@ -133,9 +143,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             </div>
                             <button
                                 type="submit"
-                                className="px-10 py-5 bg-lime-500 hover:bg-lime-600 active:bg-lime-700 text-white text-lg font-black rounded-full shadow-[0_4px_0_rgb(65,130,20)] active:shadow-none active:translate-y-[4px] transition-all"
+                                disabled={!isAudioReady || isStarting}
+                                className={`px-10 py-5 text-white text-lg font-black rounded-full shadow-[0_4px_0_rgb(65,130,20)] active:shadow-none active:translate-y-[4px] transition-all
+                                    ${(!isAudioReady || isStarting)
+                                        ? 'bg-gray-400 cursor-not-allowed'
+                                        : 'bg-lime-500 hover:bg-lime-600 active:bg-lime-700'
+                                    }`}
                             >
-                                START TIMER!
+                                {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : 'START TIMER!')}
                             </button>
                         </div>
                     </form>

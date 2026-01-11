@@ -4,6 +4,7 @@ export type AlertType = '1min' | '5min' | 'timeout' | 'default' | 'break-start' 
 
 interface NotificationContextType {
     isAlertPlaying: boolean;
+    isReady: boolean;
     unlockAudio: () => Promise<void>;
     playAlert: (type?: AlertType) => void;
     stopAlert: () => void;
@@ -25,6 +26,7 @@ interface NotificationProviderProps {
 
 export const NotificationProvider: React.FC<NotificationProviderProps> = ({ children }) => {
     const [isAlertPlaying, setIsAlertPlaying] = useState(false);
+    const [isReady, setIsReady] = useState(false);
     const audioContextRef = useRef<AudioContext | null>(null);
     const audioBuffersRef = useRef<Record<string, AudioBuffer>>({});
     const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
@@ -47,38 +49,43 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                     'memo': '/sounds/memo_save.mp3',
                     'praise-1': '/sounds/praise_1.mp3',
                     'praise-2': '/sounds/praise_2.mp3',
+                    'start': '/sounds/start.mp3',
                 };
 
-                for (const [key, path] of Object.entries(sounds)) {
+                const loadPromises = Object.entries(sounds).map(async ([key, path]) => {
                     try {
                         const response = await fetch(path);
                         if (!response.ok) throw new Error(`Failed to load ${path}: ${response.statusText}`);
                         const arrayBuffer = await response.arrayBuffer();
-                        const decodedBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
+                        const decodedBuffer = await audioContextRef.current!.decodeAudioData(arrayBuffer);
                         audioBuffersRef.current[key] = decodedBuffer;
-                        console.log(`Loaded sound: ${key}`);
+                        console.log(`Zundamon: ${key}.mp3 is ready!`);
                     } catch (e) {
                         console.warn(`Could not load sound: ${key} from ${path}`, e);
                     }
-                }
+                });
 
-                console.log('Audio system initialized and sounds loaded', Object.keys(audioBuffersRef.current));
+                await Promise.all(loadPromises);
+                setIsReady(true);
+                console.log('Audio system initialized and all sounds loaded');
             } catch (error) {
                 console.error('Failed to initialize audio:', error);
             }
         };
 
         const handleEx = () => {
-            // ensure audio context is resumed on any user interaction in the cleanup or elsewhere if needed
             if (audioContextRef.current?.state === 'suspended') {
                 audioContextRef.current.resume();
             }
         }
         window.addEventListener('click', handleEx, { once: true });
+        window.addEventListener('touchstart', handleEx, { once: true });
+
         initAudio();
 
         return () => {
             window.removeEventListener('click', handleEx);
+            window.removeEventListener('touchstart', handleEx);
             if (audioContextRef.current) {
                 audioContextRef.current.close();
             }
@@ -86,31 +93,51 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     }, []);
 
     const unlockAudio = async () => {
-        if (audioContextRef.current) {
+        if (!audioContextRef.current) return;
+
+        try {
             if (audioContextRef.current.state === 'suspended') {
-                try {
-                    await audioContextRef.current.resume();
-                    console.log('AudioContext resumed (unlocked)');
-                } catch (error) {
-                    console.error('Failed to resume AudioContext:', error);
-                }
-            } else {
-                console.log('AudioContext is already running:', audioContextRef.current.state);
+                await audioContextRef.current.resume();
+                console.log('AudioContext resumed (unlocked)');
             }
+
+            // Robust Silent Unlock: Play ALL sounds at tiny volume to whitelist them
+            const gainNode = audioContextRef.current.createGain();
+            gainNode.gain.value = 0.001;
+            gainNode.connect(audioContextRef.current.destination);
+
+            const warmupPromises = Object.keys(audioBuffersRef.current).map(key => {
+                return new Promise<void>((resolve) => {
+                    const buffer = audioBuffersRef.current[key];
+                    if (!buffer) {
+                        resolve();
+                        return;
+                    }
+                    const source = audioContextRef.current!.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(gainNode);
+                    source.start(0);
+                    source.stop(audioContextRef.current!.currentTime + 0.1);
+                    source.onended = () => resolve();
+                });
+            });
+
+            await Promise.all(warmupPromises);
+            console.log('Silent Unlock: All sounds warmed up and whitelisted.');
+
+        } catch (error) {
+            console.error('Failed to unlock/warmup AudioContext:', error);
         }
     };
 
     const playAlert = async (type: AlertType = 'default') => {
         if (!audioContextRef.current) return;
 
-        // Ensure audio is unlocked/resumed before playing
-        // Chrome requires user interaction to resume from 'suspended'
         if (audioContextRef.current.state === 'suspended') {
             console.log('AudioContext is suspended, attempting to resume...');
             await unlockAudio();
         }
 
-        // Stop any currently playing sound
         if (sourceNodeRef.current) {
             stopAlert();
         }
@@ -124,17 +151,13 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
         try {
             const source = audioContextRef.current.createBufferSource();
             source.buffer = buffer;
-
-            // Only loop if it's the timeout sound
             source.loop = type === 'timeout';
-
             source.connect(audioContextRef.current.destination);
             source.start();
 
             sourceNodeRef.current = source;
             setIsAlertPlaying(true);
 
-            // If not looping, automatically reset state when done
             if (!source.loop) {
                 source.onended = () => {
                     setIsAlertPlaying(false);
@@ -149,13 +172,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
 
     const stopAlert = () => {
-        // Clear any pending timeout loop
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
         }
 
-        // Stop current audio source
         if (sourceNodeRef.current) {
             try {
                 sourceNodeRef.current.stop();
@@ -171,7 +192,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     };
 
     return (
-        <NotificationContext.Provider value={{ isAlertPlaying, unlockAudio, playAlert, stopAlert }}>
+        <NotificationContext.Provider value={{ isAlertPlaying, isReady, unlockAudio, playAlert, stopAlert }}>
             {children}
         </NotificationContext.Provider>
     );

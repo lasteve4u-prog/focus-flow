@@ -108,7 +108,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             <p className="text-lime-700/60 text-sm font-bold mt-1 pl-1 truncate">{dailyLog.date}</p>
                         </div>
                     </div>
-// Apply to Export button
+
                     <button
                         onClick={() => exportToMarkdown(dailyLog)}
                         className="flex-shrink-0 px-5 py-2.5 text-sm font-bold text-lime-600 border-2 border-lime-200 bg-white rounded-full hover:bg-lime-50 border-lime-300 outline-none focus:ring-4 focus:ring-lime-100 whitespace-nowrap btn-puni"

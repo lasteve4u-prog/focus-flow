@@ -23,7 +23,7 @@ function AppContent() {
   const [view, setView] = useState<ViewState>('HOME');
   const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; interruptions?: string[] } | null>(null);
 
-  const { unlockAudio, playAlert, stopAlert } = useNotification();
+  const { unlockAudio, playAlert, stopAlert, isReady } = useNotification();
 
   // Ensure audio context is unlocked on first interaction
   const handleInteraction = async () => {
@@ -40,9 +40,9 @@ function AppContent() {
     setDailyLog(prev => ({ ...prev, events: [...prev.events, newEvent] }));
   };
 
-  const startTask = (title: string, duration: number) => {
+  const startTask = async (title: string, duration: number) => {
     // Explicitly unlock audio on start to ensure context is ready
-    unlockAudio();
+    await unlockAudio();
 
     setCurrentTask({ title, duration });
     // Also record start of task logic if needed
@@ -123,6 +123,7 @@ function AppContent() {
             onDeleteEvent={handleDeleteEvent}
             onStartTask={startTask}
             onDeleteTask={handleDeleteTask}
+            isAudioReady={isReady}
           />
         )}
 

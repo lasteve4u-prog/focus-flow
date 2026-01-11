@@ -41,6 +41,9 @@ function AppContent() {
   };
 
   const startTask = (title: string, duration: number) => {
+    // Explicitly unlock audio on start to ensure context is ready
+    unlockAudio();
+
     setCurrentTask({ title, duration });
     // Also record start of task logic if needed
     setView('TIMER');

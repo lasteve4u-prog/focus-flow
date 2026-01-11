@@ -52,10 +52,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 for (const [key, path] of Object.entries(sounds)) {
                     try {
                         const response = await fetch(path);
-                        if (!response.ok) throw new Error(`Failed to load ${path}`);
+                        if (!response.ok) throw new Error(`Failed to load ${path}: ${response.statusText}`);
                         const arrayBuffer = await response.arrayBuffer();
                         const decodedBuffer = await audioContextRef.current.decodeAudioData(arrayBuffer);
                         audioBuffersRef.current[key] = decodedBuffer;
+                        console.log(`Loaded sound: ${key}`);
                     } catch (e) {
                         console.warn(`Could not load sound: ${key} from ${path}`, e);
                     }
@@ -67,9 +68,17 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             }
         };
 
+        const handleEx = () => {
+            // ensure audio context is resumed on any user interaction in the cleanup or elsewhere if needed
+            if (audioContextRef.current?.state === 'suspended') {
+                audioContextRef.current.resume();
+            }
+        }
+        window.addEventListener('click', handleEx, { once: true });
         initAudio();
 
         return () => {
+            window.removeEventListener('click', handleEx);
             if (audioContextRef.current) {
                 audioContextRef.current.close();
             }
@@ -77,12 +86,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     }, []);
 
     const unlockAudio = async () => {
-        if (audioContextRef.current?.state === 'suspended') {
-            try {
-                await audioContextRef.current.resume();
-                console.log('AudioContext resumed (unlocked)');
-            } catch (error) {
-                console.error('Failed to resume AudioContext:', error);
+        if (audioContextRef.current) {
+            if (audioContextRef.current.state === 'suspended') {
+                try {
+                    await audioContextRef.current.resume();
+                    console.log('AudioContext resumed (unlocked)');
+                } catch (error) {
+                    console.error('Failed to resume AudioContext:', error);
+                }
+            } else {
+                console.log('AudioContext is already running:', audioContextRef.current.state);
             }
         }
     };
@@ -90,8 +103,12 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const playAlert = async (type: AlertType = 'default') => {
         if (!audioContextRef.current) return;
 
-        // Ensure audio is unlocked before playing
-        await unlockAudio();
+        // Ensure audio is unlocked/resumed before playing
+        // Chrome requires user interaction to resume from 'suspended'
+        if (audioContextRef.current.state === 'suspended') {
+            console.log('AudioContext is suspended, attempting to resume...');
+            await unlockAudio();
+        }
 
         // Stop any currently playing sound
         if (sourceNodeRef.current) {

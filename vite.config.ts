@@ -10,7 +10,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'sounds/*.mp3'],
+      includeAssets: ['sounds/*.mp3'],
       manifest: {
         name: 'FocusFlow',
         short_name: 'FocusFlow',

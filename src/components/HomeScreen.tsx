@@ -100,16 +100,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     return (
         <div className="w-full">
             <div className="w-full space-y-8 mt-4 md:mt-8">
-                <header className="flex justify-between items-center mb-10 px-2 gap-4">
-                    <div className="flex items-center gap-3 min-w-0">
-                        <span className="text-4xl flex-shrink-0">🫛</span>
-                        <div className="min-w-0">
-                            <h1 className="text-4xl font-black text-lime-600 tracking-tight drop-shadow-sm truncate">FocusFlow</h1>
-                            <p className="text-lime-700/60 text-sm font-bold mt-1 pl-1 truncate">{dailyLog.date}</p>
-                        </div>
+                <header className="flex flex-col items-center justify-center mb-12 mt-6 gap-4 animate-fade-in">
+                    <div className="flex items-center gap-4 sm:gap-6">
+                        <span className="text-6xl sm:text-7xl animate-bounce select-none">🫛</span>
+                        <h1 className="text-6xl sm:text-7xl font-extrabold text-lime-600 tracking-widest drop-shadow-md select-none">
+                            FocusFlow
+                        </h1>
                     </div>
-
-
+                    <div className="bg-lime-100/50 px-6 py-1 rounded-full border border-lime-200">
+                        <p className="text-lime-700 text-lg font-bold tracking-wider">{dailyLog.date}</p>
+                    </div>
                 </header>
 
                 {/* Task Starter */}

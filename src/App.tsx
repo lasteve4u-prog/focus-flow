@@ -157,10 +157,6 @@ function AppContent() {
             onDeleteEvent={handleDeleteEvent}
             onStartTask={startTask}
             onDeleteTask={handleDeleteTask}
-            onPlayPraise={() => {
-              const type = Math.random() > 0.5 ? 'praise-1' : 'praise-2';
-              playAlert(type);
-            }}
             isAudioReady={isReady}
             stamps={stamps}
           />

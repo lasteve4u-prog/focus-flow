@@ -11,12 +11,11 @@ interface HomeScreenProps {
     onDeleteEvent: (id: string) => void;
     onStartTask: (title: string, duration: number) => Promise<void>; // Updated to Promise
     onDeleteTask: (taskId: string) => void;
-    onPlayPraise: () => void;
     isAudioReady: boolean;
     stamps: Record<string, boolean>;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, onPlayPraise, isAudioReady, stamps }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');

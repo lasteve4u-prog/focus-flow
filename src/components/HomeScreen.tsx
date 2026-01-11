@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import type { DailyLog, Event } from '../types';
 import { exportToMarkdown } from '../utils/exporter';
 
+import { StampCard } from './StampCard';
+
 interface HomeScreenProps {
     dailyLog: DailyLog;
     onAddEvent: (title: string, start: string, end: string) => void;
@@ -11,9 +13,10 @@ interface HomeScreenProps {
     onDeleteTask: (taskId: string) => void;
     onPlayPraise: () => void;
     isAudioReady: boolean;
+    stamps: Record<string, boolean>;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, onPlayPraise, isAudioReady }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, onPlayPraise, isAudioReady, stamps }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
@@ -323,6 +326,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                         </div>
                     </section>
                 )}
+
+                <StampCard stamps={stamps} currentDate={dailyLog.date} />
             </div>
         </div>
     );

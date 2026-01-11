@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useLocalStorage } from './hooks/useLocalStorage'
+import { useStamps } from './hooks/useStamps'
 import type { DailyLog, Event, Task } from './types'
 import { NotificationProvider, useNotification } from './contexts/NotificationContext'
 import { HomeScreen } from './components/HomeScreen'
@@ -24,6 +25,7 @@ function AppContent() {
   const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; interruptions?: string[] } | null>(null);
 
   const { unlockAudio, playAlert, stopAlert, isReady } = useNotification();
+  const { stamps, addStamp } = useStamps();
 
   // Ensure audio context is unlocked on first interaction
   const handleInteraction = async () => {
@@ -66,12 +68,14 @@ function AppContent() {
   };
 
   const completeChecklist = () => {
+    let taskForStamp: Task | null = null;
+
     if (currentTask) {
       const newTask: Task = {
         id: crypto.randomUUID(),
         title: currentTask.title,
         durationMinutes: currentTask.duration,
-        startedAt: new Date().toISOString(), // This is approximate, ideally captured at start
+        startedAt: new Date().toISOString(),
         endedAt: new Date().toISOString(),
         toiletDoneAt: new Date().toISOString(),
         paperDoneAt: new Date().toISOString(),
@@ -80,16 +84,29 @@ function AppContent() {
           : undefined
       };
       setDailyLog(prev => ({ ...prev, tasks: [...prev.tasks, newTask] }));
+      taskForStamp = newTask;
     }
-    // Don't clear currentTask yet if we want to refer to it, but actually we are done with it.
-    // Transition to BREAK
+
     setView('BREAK');
 
-    // Play break start sound
-    // We need to access useNotification here? 
-    // AppContent sits inside NotificationProvider, so we can use `playAlert`.
-    // But `completeChecklist` is inside AppContent, so `const { playAlert } = useNotification()` works.
     playAlert('break-start');
+
+    // Stamp Logic
+    if (taskForStamp) {
+      const currentTasks = dailyLog.tasks;
+      const totalDuration = currentTasks.reduce((acc, t) => acc + t.durationMinutes, 0) + taskForStamp.durationMinutes;
+      const totalSessions = currentTasks.length + 1;
+
+      if (totalDuration >= 120 || totalSessions >= 4) {
+        const isNew = addStamp(dailyLog.date);
+        if (isNew) {
+          setTimeout(() => {
+            playAlert('praise-2');
+            alert("天才なのだ！スタンプをあげるのだ！💮");
+          }, 500);
+        }
+      }
+    }
   };
 
   const finishBreak = () => {
@@ -133,7 +150,9 @@ function AppContent() {
               const type = Math.random() > 0.5 ? 'praise-1' : 'praise-2';
               playAlert(type);
             }}
-            isAudioReady={isReady}
+            }}
+        isAudioReady={isReady}
+        stamps={stamps}
           />
         )}
 

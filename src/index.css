@@ -89,6 +89,31 @@ body {
   animation: yuraYura 2s ease-in-out infinite;
 }
 
+
+@keyframes jelly {
+
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+
+  25% {
+    transform: scale(0.9, 1.1);
+  }
+
+  50% {
+    transform: scale(1.1, 0.9);
+  }
+
+  75% {
+    transform: scale(0.95, 1.05);
+  }
+}
+
+.animate-jelly {
+  animation: jelly 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
 /* Puni-puni Button Logic */
 .btn-puni {
   @apply transition-transform duration-100 ease-out;

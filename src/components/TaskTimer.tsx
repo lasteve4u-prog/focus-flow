@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNotification, type AlertType } from '../contexts/NotificationContext';
 import { NotificationModal } from './NotificationModal';
-
+import confetti from 'canvas-confetti';
 interface TaskTimerProps {
     durationMinutes: number;
     taskTitle: string;
@@ -68,6 +68,13 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                 setAlertType('timeout');
                 setAlertMessage("Time's up! Great work.");
                 setIsAlertOpen(true);
+                // Trigger confetti
+                confetti({
+                    particleCount: 150,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#84cc16', '#ecfccb', '#ffffff'] // Lime/Green theme
+                });
             }
         };
 

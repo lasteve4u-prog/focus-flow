@@ -9,6 +9,7 @@ import { ForcedChecklist } from './components/ForcedChecklist'
 
 
 import { BreakTimer } from './components/BreakTimer'
+import confetti from 'canvas-confetti';
 
 type ViewState = 'HOME' | 'TIMER' | 'CHECKLIST' | 'BREAK';
 
@@ -103,6 +104,14 @@ function AppContent() {
           setTimeout(() => {
             playAlert('praise-2');
             console.log("天才なのだ！スタンプをあげるのだ！💮");
+            // Celebration Confetti
+            confetti({
+              particleCount: 200,
+              spread: 100,
+              origin: { y: 0.6 },
+              colors: ['#a3e635', '#fcd34d', '#ffffff'], // Lime/Yellow/White
+              scalar: 1.2
+            });
           }, 500);
         }
       }

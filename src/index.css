@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -107,4 +105,9 @@ body {
   /* "puni" usually means squishing or pressing down. Scale 0.95 is good. */
   transform: translateY(2px) scale(0.95);
   box-shadow: none;
+}
+
+/* Force override as requested */
+* {
+  font-family: 'Zen Maru Gothic', sans-serif !important;
 }

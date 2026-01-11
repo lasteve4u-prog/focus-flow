@@ -137,11 +137,11 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
             await Promise.all(warmupPromises);
             console.log(`Silent Unlock: All ${bufferKeys.length} sounds warmed up and whitelisted.`);
-            // alert(`Debug: Audio Unlocked. Buffers: ${bufferKeys.join(', ')}`); // Debug for mobile
+            // alert(`Debug: Audio Unlocked. Buffers: ${bufferKeys.join(', ')}`); 
 
         } catch (error) {
             console.error('Failed to unlock/warmup AudioContext:', error);
-            alert(`Audio Unlock Failed: ${error}`);
+            alert(`Chrome blocked audio (Unlock): ${error}`);
         }
     };
 
@@ -181,10 +181,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             }
 
             console.log(`Alert started: ${type}`);
-            // alert(`Playing: ${type}`); // Debug for mobile
+            // alert(`Playing: ${type}`); 
         } catch (error) {
             console.error('Failed to play alert:', error);
-            alert(`Play Failed (${type}): ${error}`);
+            alert(`Chrome blocked audio (Play ${type}): ${error}`);
         }
     };
 

@@ -45,7 +45,10 @@ function AppContent() {
     await unlockAudio();
 
     console.log('Zundamon: Attempting to play start sound');
-    playAlert('start');
+    // Small delay to allow audio context to stabilize after resume/unlock
+    setTimeout(() => {
+      playAlert('start');
+    }, 100);
 
     setCurrentTask({ title, duration });
     // Also record start of task logic if needed

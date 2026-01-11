@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
-export type AlertType = '1min' | '5min' | 'timeout' | 'default' | 'break-start' | 'break-end' | 'memo' | 'praise-1' | 'praise-2';
+export type AlertType = '1min' | '5min' | 'timeout' | 'default' | 'break-start' | 'break-end' | 'memo' | 'praise-1' | 'praise-2' | 'start';
 
 interface NotificationContextType {
     isAlertPlaying: boolean;
@@ -168,6 +168,14 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             source.connect(audioContextRef.current.destination);
             source.start();
 
+            if (sourceNodeRef.current) {
+                try {
+                    sourceNodeRef.current.stop();
+                    sourceNodeRef.current.disconnect();
+                } catch (e) { /* ignore */ }
+                sourceNodeRef.current = null;
+            }
+
             sourceNodeRef.current = source;
             setIsAlertPlaying(true);
 
@@ -181,6 +189,9 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             console.log(`Alert started: ${type}`);
         } catch (error) {
             console.error('Failed to play alert:', error);
+            if (type === 'start') {
+                alert(`Start Sound Failed: ${error}`);
+            }
         }
     };
 

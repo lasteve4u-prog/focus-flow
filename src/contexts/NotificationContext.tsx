@@ -103,30 +103,45 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
             // Robust Silent Unlock: Play ALL sounds at tiny volume to whitelist them
             const gainNode = audioContextRef.current.createGain();
-            gainNode.gain.value = 0.001;
+            gainNode.gain.value = 0.001; // Inaudible
             gainNode.connect(audioContextRef.current.destination);
 
-            const warmupPromises = Object.keys(audioBuffersRef.current).map(key => {
+            const buffers = audioBuffersRef.current;
+            const bufferKeys = Object.keys(buffers);
+
+            if (bufferKeys.length === 0) {
+                console.warn("Silent Unlock: No buffers loaded yet!");
+                return;
+            }
+
+            const warmupPromises = bufferKeys.map(key => {
                 return new Promise<void>((resolve) => {
-                    const buffer = audioBuffersRef.current[key];
+                    const buffer = buffers[key];
                     if (!buffer) {
                         resolve();
                         return;
                     }
-                    const source = audioContextRef.current!.createBufferSource();
-                    source.buffer = buffer;
-                    source.connect(gainNode);
-                    source.start(0);
-                    source.stop(audioContextRef.current!.currentTime + 0.1);
-                    source.onended = () => resolve();
+                    try {
+                        const source = audioContextRef.current!.createBufferSource();
+                        source.buffer = buffer;
+                        source.connect(gainNode);
+                        source.start(0);
+                        source.stop(audioContextRef.current!.currentTime + 0.1); // Short duration
+                        source.onended = () => resolve();
+                    } catch (e) {
+                        console.error(`Silent Unlock failed for ${key}:`, e);
+                        resolve(); // Resolve anyway to not block
+                    }
                 });
             });
 
             await Promise.all(warmupPromises);
-            console.log('Silent Unlock: All sounds warmed up and whitelisted.');
+            console.log(`Silent Unlock: All ${bufferKeys.length} sounds warmed up and whitelisted.`);
+            // alert(`Debug: Audio Unlocked. Buffers: ${bufferKeys.join(', ')}`); // Debug for mobile
 
         } catch (error) {
             console.error('Failed to unlock/warmup AudioContext:', error);
+            alert(`Audio Unlock Failed: ${error}`);
         }
     };
 
@@ -166,8 +181,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             }
 
             console.log(`Alert started: ${type}`);
+            // alert(`Playing: ${type}`); // Debug for mobile
         } catch (error) {
             console.error('Failed to play alert:', error);
+            alert(`Play Failed (${type}): ${error}`);
         }
     };
 

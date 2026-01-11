@@ -9,10 +9,11 @@ interface HomeScreenProps {
     onDeleteEvent: (id: string) => void;
     onStartTask: (title: string, duration: number) => Promise<void>; // Updated to Promise
     onDeleteTask: (taskId: string) => void;
+    onPlayPraise: () => void;
     isAudioReady: boolean;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, onPlayPraise, isAudioReady }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
@@ -84,15 +85,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     // I will use `new Audio` which is consistent with `handleStartTask`.
 
     React.useEffect(() => {
-        // Just a small delay to not clash with other sounds immediately
         if (dailyLog.tasks.length > 0) {
             const timer = setTimeout(() => {
-                const sound = Math.random() > 0.5 ? '/sounds/praise_1.mp3' : '/sounds/praise_2.mp3';
-                new Audio(sound).play().catch(e => console.log('Praise play failed', e));
+                onPlayPraise();
             }, 1000);
             return () => clearTimeout(timer);
         }
-    }, [dailyLog.tasks.length]); // Dependencies: play when task count changes (e.g. added new one)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dailyLog.tasks.length]);
 
     return (
         <div className="w-full">

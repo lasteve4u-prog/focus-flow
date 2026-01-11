@@ -325,7 +325,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
 
                 <StampCard stamps={stamps} currentDate={dailyLog.date} />
 
-                <div className="flex justify-center mt-8 mb-4">
+                <div className="flex justify-center mt-12 mb-8">
                     <button
                         onClick={() => exportToMarkdown(dailyLog)}
                         className="px-8 py-4 text-lime-600 border-2 border-lime-200 bg-white rounded-full font-bold hover:bg-lime-50 hover:border-lime-300 outline-none focus:ring-4 focus:ring-lime-100 transition-all shadow-sm btn-puni"

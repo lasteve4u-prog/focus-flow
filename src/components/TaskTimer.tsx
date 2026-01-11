@@ -124,7 +124,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                         🫛
                     </div>
 
-                    <div className="text-[9rem] md:text-[11rem] leading-none font-black tracking-tighter text-lime-600 drop-shadow-xl tabular-nums transition-all duration-300 font-mono">
+                    <div className="text-[9rem] md:text-[11rem] leading-none font-black tracking-[0.2rem] text-lime-600 drop-shadow-xl tabular-nums transition-all duration-300 font-mono">
                         {formatTime(timeLeft)}
                     </div>
                 </div>

@@ -55,7 +55,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
                 </div>
 
                 <div className="relative mb-12">
-                    <div className="text-[8rem] md:text-[10rem] leading-none font-black tracking-tighter text-green-500 drop-shadow-sm tabular-nums font-mono">
+                    <div className="text-[8rem] md:text-[10rem] leading-none font-black tracking-[0.2rem] text-green-500 drop-shadow-sm tabular-nums font-mono">
                         {formatTime(timeLeft)}
                     </div>
                 </div>

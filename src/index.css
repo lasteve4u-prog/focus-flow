@@ -30,7 +30,7 @@ body {
   background-size: 32px 32px;
   /* To make it "very faint", we can rely on the color #4ade80 (green-400) being small? 
      Or better, use rgba in the gradient itself for opacity interaction */
-  background-image: radial-gradient(rgba(74, 222, 128, 0.2) 2px, transparent 2px);
+  background-image: radial-gradient(rgba(74, 222, 128, 0.08) 2px, transparent 2px);
 }
 
 .tabular-nums {

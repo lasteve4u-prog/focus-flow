@@ -7,7 +7,7 @@ interface StampCardProps {
 
 export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => {
     const [days, setDays] = useState<string[]>([]);
-    const [showCelebration, setShowCelebration] = useState(false);
+
 
     useEffect(() => {
         // Generate days for the current month

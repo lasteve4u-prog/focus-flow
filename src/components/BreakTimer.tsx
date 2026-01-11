@@ -46,7 +46,14 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
     }, [timeLeft, playAlert, stopAlert]);
 
     const handleFinish = () => {
-        stopAlert();
+        // If skipping (time remains), force play the end sound
+        if (timeLeft > 0) {
+            stopAlert(); // Stop break-start or other sounds
+            playAlert('break-end');
+        }
+        // If time is up (timeLeft == 0), the useEffect already played the sound.
+        // We do NOT call stopAlert() here so the voice finishes naturally.
+
         onFinish();
     };
 

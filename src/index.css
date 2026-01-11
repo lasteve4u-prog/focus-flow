@@ -6,41 +6,26 @@
   font-family: 'Zen Maru Gothic', sans-serif;
   line-height: 1.5;
   font-weight: 500;
-
   color-scheme: light;
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  /* Keep base color but overlay pattern will be handled in App or here */
-  @apply bg-lime-50 text-green-900;
-  background-image: radial-gradient(#84cc16 1.5px, transparent 1.5px);
-  background-size: 24px 24px;
-  background-position: 0 0;
-  /* Opacity of pattern via color above: #84cc16 is lime-500. 1.5px is small. */
-  /* Actually lime-500 is strong. Standard lime-200 is better for subtle pattern. */
-}
+  /* User requested specific background color and pattern */
+  background-color: #F0FFF0;
+  /* Honeydew */
+  color: #14532d;
+  /* green-900 */
+  font-family: 'Zen Maru Gothic', sans-serif;
 
-/* Subtle pattern override for better visibility control */
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
-  background-image: radial-gradient(#d9f99d 2px, transparent 2px);
-  /* lime-200 */
+  /* Subtle dot pattern */
+  background-image: radial-gradient(#4ade80 2px, transparent 2px);
   background-size: 32px 32px;
-  opacity: 0.6;
-  pointer-events: none;
+  /* To make it "very faint", we can rely on the color #4ade80 (green-400) being small? 
+     Or better, use rgba in the gradient itself for opacity interaction */
+  background-image: radial-gradient(rgba(74, 222, 128, 0.2) 2px, transparent 2px);
 }
 
 .tabular-nums {
@@ -100,13 +85,9 @@ body::before {
 }
 
 /* Puni-puni Button Logic */
-/* We will apply this via utility or just global button override? 
-   Global override is risky for icon buttons. Let's make a utility class 
-   and apply it to major specific buttons in components, or 
-   create a layer. for now, just utility classes. */
-
 .btn-puni {
-  @apply transition-all duration-200 ease-out;
+  @apply transition-transform duration-100 ease-out;
+  /* User emphasized transition-transform */
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -116,8 +97,7 @@ body::before {
 }
 
 .btn-puni:active {
-  transform: translateY(2px);
+  /* "puni" usually means squishing or pressing down. Scale 0.95 is good. */
+  transform: translateY(2px) scale(0.95);
   box-shadow: none;
 }
-
-/* Specific color adjustments for neumorphic feel if needed */

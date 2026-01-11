@@ -235,14 +235,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                     <button
                                         type="button"
                                         onClick={handleCancelEdit}
-                                        className="px-5 py-3 bg-gray-400 text-white rounded-full text-sm font-bold hover:bg-gray-500 active:scale-95 transition-all shadow-md whitespace-nowrap"
+                                        className="px-5 py-3 bg-gray-400 text-white rounded-full text-sm font-bold hover:bg-gray-500 shadow-md whitespace-nowrap btn-puni"
                                     >
                                         キャンセル
                                     </button>
                                     <button
                                         type="submit"
                                         onClick={(e) => handleSubmitEvent(e)}
-                                        className="px-6 py-3 bg-orange-500 text-white rounded-full text-sm font-bold hover:bg-orange-600 active:scale-95 transition-all shadow-md whitespace-nowrap"
+                                        className="px-6 py-3 bg-orange-500 text-white rounded-full text-sm font-bold hover:bg-orange-600 shadow-md whitespace-nowrap btn-puni"
                                     >
                                         更新する
                                     </button>
@@ -250,7 +250,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             ) : (
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-green-700 text-white rounded-full text-sm font-bold hover:bg-green-800 active:scale-95 transition-all shadow-md flex-shrink-0 whitespace-nowrap w-full md:w-auto"
+                                    className="px-6 py-3 bg-green-700 text-white rounded-full text-sm font-bold hover:bg-green-800 shadow-md flex-shrink-0 whitespace-nowrap w-full md:w-auto btn-puni"
                                 >
                                     追加する
                                 </button>

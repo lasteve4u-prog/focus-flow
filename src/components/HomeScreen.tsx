@@ -87,15 +87,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     // NOTE: HomeScreen doesn't know about `useNotification`.
     // I will use `new Audio` which is consistent with `handleStartTask`.
 
-    React.useEffect(() => {
-        if (dailyLog.tasks.length > 0) {
-            const timer = setTimeout(() => {
-                onPlayPraise();
-            }, 1000);
-            return () => clearTimeout(timer);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [dailyLog.tasks.length]);
+
 
     return (
         <div className="w-full">

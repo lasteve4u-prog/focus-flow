@@ -50,7 +50,7 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
                     const isToday = dayStr === currentDate;
 
                     return (
-                        <div key={dayStr} className={`aspect-square flex flex-col items-center justify-center bg-lime-50 rounded-xl border-2 ${isToday ? 'border-lime-400 ring-2 ring-lime-200' : 'border-lime-100'} relative`}>
+                        <div key={dayStr} className={`aspect-square flex flex-col items-center justify-center rounded-xl border-2 transition-colors duration-300 ${isEarned ? 'bg-lime-200' : 'bg-lime-50'} ${isToday ? 'border-lime-400 ring-2 ring-lime-200' : 'border-lime-100'} relative`}>
                             <span className="absolute top-1 left-1 text-[10px] font-bold text-lime-400">{dayNum}</span>
 
                             {isEarned ? (

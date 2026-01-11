@@ -6,7 +6,7 @@ import { NotificationProvider, useNotification } from './contexts/NotificationCo
 import { HomeScreen } from './components/HomeScreen'
 import { TaskTimer } from './components/TaskTimer'
 import { ForcedChecklist } from './components/ForcedChecklist'
-import { InstallHint } from './components/InstallHint'
+
 
 import { BreakTimer } from './components/BreakTimer'
 
@@ -150,9 +150,8 @@ function AppContent() {
               const type = Math.random() > 0.5 ? 'praise-1' : 'praise-2';
               playAlert(type);
             }}
-            }}
-        isAudioReady={isReady}
-        stamps={stamps}
+            isAudioReady={isReady}
+            stamps={stamps}
           />
         )}
 
@@ -172,7 +171,6 @@ function AppContent() {
           <BreakTimer onFinish={finishBreak} />
         )}
 
-        <InstallHint />
       </div>
     </div>
   )

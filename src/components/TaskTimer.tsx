@@ -112,6 +112,11 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                     {/* Glow effect */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-lime-400/20 blur-3xl rounded-full pointer-events-none animate-pulse"></div>
 
+                    {/* Zundamon/Bean Icon Animated */}
+                    <div className="absolute -top-24 left-1/2 -translate-x-1/2 text-6xl animate-yura-yura drop-shadow-md">
+                        🫛
+                    </div>
+
                     <div className="text-[9rem] md:text-[11rem] leading-none font-black tracking-tighter text-lime-600 drop-shadow-xl tabular-nums transition-all duration-300 font-mono">
                         {formatTime(timeLeft)}
                     </div>
@@ -120,7 +125,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                 <div className="flex gap-4">
                     <button
                         onClick={handleStop}
-                        className="group relative inline-flex items-center justify-center px-10 py-5 font-black text-white text-xl transition-all duration-300 bg-red-400 rounded-full hover:bg-red-500 shadow-[0_4px_0_rgb(200,50,50)] hover:shadow-[0_6px_0_rgb(200,50,50)] active:shadow-none active:translate-y-[4px] border-4 border-white/30"
+                        className="group relative inline-flex items-center justify-center px-10 py-5 font-black text-white text-xl rounded-full bg-red-400 hover:bg-red-500 border-4 border-white/30 btn-puni"
                     >
                         <span className="mr-3 animate-pulse text-2xl">⏹</span> STOP!
                     </button>
@@ -133,7 +138,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                                 alert("メモしたのだ！集中に戻るのだ！😤");
                             }
                         }}
-                        className="group relative inline-flex items-center justify-center px-6 py-5 font-black text-lime-600 text-lg transition-all duration-300 bg-white rounded-full hover:bg-lime-50 shadow-[0_4px_0_#bef264] hover:shadow-[0_6px_0_#bef264] active:shadow-none active:translate-y-[4px] border-4 border-lime-200"
+                        className="group relative inline-flex items-center justify-center px-6 py-5 font-black text-lime-600 text-lg rounded-full bg-white hover:bg-lime-50 border-4 border-lime-200 btn-puni"
                         title="あとでやる (Memo)"
                     >
                         <span className="text-2xl">⚡️</span> あとで！

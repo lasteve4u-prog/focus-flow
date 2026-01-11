@@ -108,9 +108,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             <p className="text-lime-700/60 text-sm font-bold mt-1 pl-1 truncate">{dailyLog.date}</p>
                         </div>
                     </div>
+// Apply to Export button
                     <button
                         onClick={() => exportToMarkdown(dailyLog)}
-                        className="flex-shrink-0 px-5 py-2.5 text-sm font-bold text-lime-600 border-2 border-lime-200 bg-white rounded-full hover:bg-lime-50 hover:border-lime-300 active:scale-95 transition-all outline-none focus:ring-4 focus:ring-lime-100 whitespace-nowrap"
+                        className="flex-shrink-0 px-5 py-2.5 text-sm font-bold text-lime-600 border-2 border-lime-200 bg-white rounded-full hover:bg-lime-50 border-lime-300 outline-none focus:ring-4 focus:ring-lime-100 whitespace-nowrap btn-puni"
                     >
                         Export Obsidian 📝
                     </button>
@@ -147,10 +148,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             <button
                                 type="submit"
                                 disabled={!isAudioReady || isStarting}
-                                className={`px-10 py-5 text-white text-lg font-black rounded-full shadow-[0_4px_0_rgb(65,130,20)] active:shadow-none active:translate-y-[4px] transition-all
+                                className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
                                     ${(!isAudioReady || isStarting)
-                                        ? 'bg-gray-400 cursor-not-allowed'
-                                        : 'bg-lime-500 hover:bg-lime-600 active:bg-lime-700'
+                                        ? 'bg-gray-400 cursor-not-allowed shadow-none'
+                                        : 'bg-lime-500 hover:bg-lime-600'
                                     }`}
                             >
                                 {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : 'START TIMER!')}

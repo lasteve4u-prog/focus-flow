@@ -136,7 +136,7 @@ function AppContent() {
   };
 
   return (
-    <div onClick={handleInteraction} className="min-h-screen bg-lime-50 w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-500">
+    <div onClick={handleInteraction} className={`min-h-screen w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-1000 ease-in-out ${view === 'TIMER' ? 'bg-[#ecfccb]' : 'bg-lime-50'}`}>
       <div className="w-full max-w-2xl px-4 flex flex-col items-center gap-6 relative">
         {view === 'HOME' && (
           <HomeScreen

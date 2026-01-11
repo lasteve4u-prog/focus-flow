@@ -43,4 +43,13 @@ export default defineConfig({
       }
     })
   ],
+  build: {
+    assetsInlineLimit: 8192, // Increase inline limit to avoid small asset requests
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: undefined, // Ensure default splitting logic
+      },
+    },
+  },
 })

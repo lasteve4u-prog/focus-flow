@@ -33,12 +33,17 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
         };
     }, []);
 
+    const hasPlayedRef = useRef(false);
+
     // Check for finish
     useEffect(() => {
-        if (timeLeft === 0) {
+        if (timeLeft === 0 && !hasPlayedRef.current) {
+            hasPlayedRef.current = true;
+            // Eusure strict single playback
+            stopAlert();
             playAlert('break-end');
         }
-    }, [timeLeft, playAlert]);
+    }, [timeLeft, playAlert, stopAlert]);
 
     const handleFinish = () => {
         stopAlert();

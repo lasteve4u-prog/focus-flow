@@ -90,6 +90,8 @@ function AppContent() {
 
     setView('BREAK');
 
+    // Ensure strict single playback
+    stopAlert();
     playAlert('break-start');
 
     // Stamp Logic

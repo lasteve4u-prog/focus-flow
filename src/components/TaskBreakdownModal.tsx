@@ -112,6 +112,70 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
         }));
     };
 
+    const autoTagAndSort = (items: Subtask[]): Subtask[] => {
+        const rules = [
+            { tag: "【定義】", keywords: ["定義", "ゴール"], score: 5 },
+            { tag: "【要件】", keywords: ["要件", "目的"], score: 10 },
+            { tag: "【設計】", keywords: ["設計", "選定", "構成"], score: 12 },
+            { tag: "【在庫】", keywords: ["在庫", "確認", "中身"], score: 15 },
+            { tag: "【計画】", keywords: ["計画", "リスト", "献立"], score: 18 },
+            { tag: "【準備】", keywords: ["準備", "エコバッグ", "宛先", "ブランチ", "インストール"], score: 20 },
+            { tag: "【分別】", keywords: ["分別", "基準"], score: 22 },
+            { tag: "【収録】", keywords: ["収録", "録音", "音声"], score: 30 },
+            { tag: "【下書】", keywords: ["下書", "ドラフト"], score: 35 },
+            { tag: "【素材】", keywords: ["素材", "プロンプト", "画像生成"], score: 38 },
+            { tag: "【回収】", keywords: ["回収", "ゴミ", "拾う"], score: 40 },
+            { tag: "【移動】", keywords: ["移動", "戻す"], score: 42 },
+            { tag: "【実装】", keywords: ["実装", "ロジック", "関数"], score: 50 },
+            { tag: "【UI】", keywords: ["画面", "コンポーネント", "UI"], score: 52 },
+            { tag: "【修正】", keywords: ["修正", "直し"], score: 55 },
+            { tag: "【構成】", keywords: ["構成", "流し込み", "見出し"], score: 58 },
+            { tag: "【編集】", keywords: ["編集", "件名"], score: 60 },
+            { tag: "【除去】", keywords: ["除去", "ホコリ", "掃除機"], score: 62 },
+            { tag: "【拭き】", keywords: ["拭き", "モップ"], score: 65 },
+            { tag: "【入店】", keywords: ["入店", "カート"], score: 68 },
+            { tag: "【集中】", keywords: ["集中", "作業"], score: 70 },
+            { tag: "【結合】", keywords: ["結合", "繋ぎ込み"], score: 75 },
+            { tag: "【品質】", keywords: ["品質", "リンター"], score: 78 },
+            { tag: "【設定】", keywords: ["設定", "SEO", "メタデータ"], score: 80 },
+            { tag: "【確認】", keywords: ["確認", "プレビュー", "チェック", "校正"], score: 85 },
+            { tag: "【精算】", keywords: ["精算", "レジ", "決済"], score: 88 },
+            { tag: "【保存】", keywords: ["保存", "コミット", "プッシュ"], score: 90 },
+            { tag: "【共有】", keywords: ["共有", "PR", "レビュー"], score: 92 },
+            { tag: "【公開】", keywords: ["公開", "シェア", "送信"], score: 95 },
+            { tag: "【排出】", keywords: ["排出", "ゴミ袋", "搬出"], score: 96 },
+            { tag: "【帰宅】", keywords: ["帰宅", "収納"], score: 97 },
+            { tag: "【仕上】", keywords: ["仕上", "見直し"], score: 98 },
+            { tag: "【完了】", keywords: ["完了", "提出", "終了"], score: 100 },
+        ];
+
+        return [...items].map(item => {
+            let title = item.title;
+            let score = 999; // Default (end)
+
+            // 1. Check existing tag
+            const existingTagMatch = title.match(/^【(.*?)】/);
+            if (existingTagMatch) {
+                const tag = existingTagMatch[0];
+                const rule = rules.find(r => r.tag === tag);
+                if (rule) score = rule.score;
+            } else {
+                // 2. Auto-tagging
+                const rule = rules.find(r => r.keywords.some(k => title.includes(k)));
+                if (rule) {
+                    title = `${rule.tag}${title}`;
+                    score = rule.score;
+                }
+            }
+            return { ...item, title, _tempScore: score };
+        }).sort((a, b) => a._tempScore - b._tempScore)
+            .map(({ _tempScore, ...item }) => item);
+    };
+
+    const handleSort = () => {
+        setSubtasks(prev => autoTagAndSort(prev));
+    };
+
     const handleAdd = (e: React.FormEvent) => {
         e.preventDefault();
         if (!newItemTitle.trim()) return;
@@ -139,6 +203,12 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
                         <span className="text-2xl animate-spin-slow">🪄</span>
                         <span>AI自動分解なのだ！</span>
                     </h3>
+                    <button
+                        onClick={handleSort}
+                        className="ml-auto bg-white border-2 border-lime-300 text-lime-700 hover:bg-lime-50 font-bold px-3 py-1 rounded-xl text-sm transition-all shadow-sm active:translate-y-0.5"
+                    >
+                        ✨ 整える
+                    </button>
                     <p className="text-lime-600 text-sm font-bold mt-1 truncate">
                         「{taskTitle}」を小さく分けたのだ
                     </p>

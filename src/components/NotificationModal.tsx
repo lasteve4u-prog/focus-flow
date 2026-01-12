@@ -9,7 +9,7 @@ interface NotificationModalProps {
 }
 
 export const NotificationModal: React.FC<NotificationModalProps> = ({
-    message = "Time's up! Check your progress.",
+    message = "時間切れなのだ！進捗を確認するのだ。",
     isOpen,
     onClose,
     alertType = 'default'
@@ -35,7 +35,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                     <div className="mb-6 text-6xl animate-bounce">
                         🔔
                     </div>
-                    <h3 className="text-2xl font-black text-green-800 mb-4">Notification</h3>
+                    <h3 className="text-2xl font-black text-green-800 mb-4">お知らせなのだ</h3>
                     <p className="text-green-700 text-lg font-bold mb-8 leading-relaxed">
                         {message}
                     </p>
@@ -43,7 +43,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                         onClick={onClose}
                         className="w-full py-4 bg-lime-500 hover:bg-lime-600 text-white rounded-full font-black text-xl shadow-[0_4px_0_rgb(65,130,20)] active:shadow-none active:translate-y-[4px] transition-all"
                     >
-                        OK!
+                        OKなのだ！
                     </button>
                 </div>
             </div>

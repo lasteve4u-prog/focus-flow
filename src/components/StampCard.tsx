@@ -39,7 +39,7 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
         <section className="bg-white p-6 rounded-[2rem] border-4 border-lime-200 shadow-lg mt-8 relative overflow-hidden">
             <h2 className="text-2xl font-black text-green-800 mb-6 flex items-center justify-center gap-3">
                 <span className="text-3xl">💮</span>
-                <span>{titleDate} のスタンプ帳</span>
+                <span>{titleDate} のスタンプ帳なのだ</span>
                 <span className="text-3xl">💮</span>
             </h2>
 

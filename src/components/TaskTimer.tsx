@@ -58,7 +58,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                 else if (remainingMin === 5) setAlertType('5min');
                 else setAlertType('default');
 
-                setAlertMessage(`${remainingMin} minutes left! Stay focused.`);
+                setAlertMessage(`${remainingMin} 分前なのだ！集中するのだ。`);
                 setIsAlertOpen(true);
             }
 
@@ -66,7 +66,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
             if (remainingSec === 0 && !isTimeUp) {
                 setIsTimeUp(true);
                 setAlertType('timeout');
-                setAlertMessage("Time's up! Great work.");
+                setAlertMessage("時間なのだ！よく頑張ったのだ！");
                 setIsAlertOpen(true);
                 // Trigger confetti
                 confetti({
@@ -98,7 +98,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
         <div className="flex flex-col items-center justify-center flex-1 w-full bg-lime-100 text-green-900 p-8 rounded-[2rem] shadow-2xl animate-fade-in border-4 border-lime-300">
             <div className="w-full max-w-2xl flex flex-col items-center">
                 <div className="mb-12 text-center text-lime-800">
-                    <p className="uppercase tracking-[0.2em] text-sm font-black mb-3 text-lime-600 bg-lime-200 inline-block px-4 py-1 rounded-full">Current Task</p>
+                    <p className="uppercase tracking-[0.2em] text-sm font-black mb-3 text-lime-600 bg-lime-200 inline-block px-4 py-1 rounded-full">現在のタスクなのだ</p>
                     <h2 className="text-3xl md:text-5xl font-black text-green-900 tracking-tight mt-4">{taskTitle}</h2>
                 </div>
 
@@ -134,7 +134,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                         onClick={handleStop}
                         className="group relative inline-flex items-center justify-center px-10 py-5 font-black text-white text-xl rounded-full bg-red-400 hover:bg-red-500 border-4 border-white/30 btn-puni"
                     >
-                        <span className="mr-3 animate-pulse text-2xl">⏹</span> STOP!
+                        <span className="mr-3 animate-pulse text-2xl">⏹</span> 中断するのだ！
                     </button>
 
                     <button
@@ -153,7 +153,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                 </div>
 
                 <div className="mt-16 text-lime-700 text-lg font-bold tracking-wide bg-lime-50 px-6 py-2 rounded-full border-2 border-lime-200">
-                    ✨ Stay Focused! You are doing great! ✨
+                    ✨ 集中するのだ！えらいのだ！ ✨
                 </div>
             </div>
 

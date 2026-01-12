@@ -77,7 +77,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
                         onClick={handleFinish}
                         className="px-10 py-5 bg-green-500 hover:bg-green-600 text-white rounded-full font-black text-xl shadow-[0_4px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px] transition-all animate-bounce"
                     >
-                        休憩おわり！
+                        休憩を終えるのだ！
                     </button>
                 )}
 
@@ -86,7 +86,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
                         onClick={handleFinish}
                         className="px-8 py-3 bg-gray-300 hover:bg-gray-400 text-white rounded-full font-bold text-sm transition-all"
                     >
-                        スキップする
+                        スキップするのだ
                     </button>
                 )}
             </div>

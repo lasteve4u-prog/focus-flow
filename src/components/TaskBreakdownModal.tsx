@@ -34,17 +34,41 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
         const t = title.toLowerCase();
         let steps: string[] = [];
 
-        if (t.includes('report') || t.includes('レポート') || t.includes('書く')) {
-            steps = ["資料を集める", "構成を考える (Outlining)", "下書きを書く", "推敲・見直し", "提出する"];
-        } else if (t.includes('clean') || t.includes('掃除') || t.includes('片付け')) {
-            steps = ["ゴミを袋にまとめる", "床にあるものを拾う", "掃除機をかける", "机を拭く", "換気をする"];
-        } else if (t.includes('mail') || t.includes('メール') || t.includes('連絡')) {
-            steps = ["宛先を確認する", "要件を箇条書きにする", "本文を書く", "誤字脱字チェック", "送信ボタンを押す"];
-        } else if (t.includes('study') || t.includes('勉強')) {
-            steps = ["教材を用意する", "目標ページを決める", "タイマーをセットする", "集中して解く", "答え合わせをする"];
-        } else {
-            // Generic fallback
-            steps = ["まずは深呼吸する", "なにから始めるか書き出す", "最初の5分だけやってみる", "途中休憩を入れる"];
+        // Coding / Development
+        if (t.includes('code') || t.includes('program') || t.includes('app') || t.includes('開発') || t.includes('実装')) {
+            steps = ["仕様を確認する", "Gitブランチを切る", "必要なファイルを作成する", "コードを書く", "動作確認・テストする"];
+        }
+        // Report / Writing
+        else if (t.includes('report') || t.includes('write') || t.includes('paper') || t.includes('レポート') || t.includes('執筆')) {
+            steps = ["資料や参考文献を机に広げる", "見出し（構成）を書き出す", "PCのエディタを開く", "本文を書き始める", "誤字脱字をチェックする"];
+        }
+        // Cleaning / Tidy up
+        else if (t.includes('clean') || t.includes('tidy') || t.includes('掃除') || t.includes('片付け')) {
+            steps = ["ゴミ袋を用意する", "床にある服や物を拾う", "机の上を拭く", "掃除機をかける", "ゴミをまとめる"];
+        }
+        // Email / Contact
+        else if (t.includes('mail') || t.includes('contact') || t.includes('メール') || t.includes('連絡')) {
+            steps = ["宛先のアドレスを確認する", "件名を入力する", "要件を箇条書きにする", "本文を入力する", "送信ボタンを押す"];
+        }
+        // Shopping
+        else if (t.includes('shop') || t.includes('buy') || t.includes('買い物') || t.includes('スーパー')) {
+            steps = ["冷蔵庫の中身を確認する", "買うものリストを作る", "財布とバッグを持つ", "お店へ移動する", "必要なものをカゴに入れる"];
+        }
+        // Laundry
+        else if (t.includes('laundry') || t.includes('wash') || t.includes('洗濯')) {
+            steps = ["洗濯物をネットに入れる", "洗濯機に洗剤を入れる", "スタートボタンを押す", "干すためのハンガーを用意する", "洗濯物を干す"];
+        }
+        // Cooking
+        else if (t.includes('cook') || t.includes('meal') || t.includes('料理') || t.includes('ご飯')) {
+            steps = ["献立を決める", "冷蔵庫から食材を出す", "野菜などを切る", "加熱調理する", "皿に盛り付ける"];
+        }
+        // Study
+        else if (t.includes('study') || t.includes('learn') || t.includes('勉強')) {
+            steps = ["教科書とノートを机に出す", "勉強するページを開く", "問題を3問解く", "答え合わせをする", "間違えた箇所を見直す"];
+        }
+        // Generic Fallback (More physical)
+        else {
+            steps = ["必要な道具を机・作業場に出す", "やることを紙に書き出す", "最初の1ステップ目に着手する", "5分間作業を続ける", "次のステップを確認する"];
         }
 
         return steps.map(step => ({

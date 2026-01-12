@@ -20,7 +20,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
-    const [taskDuration, setTaskDuration] = useState(5);
+    const [taskDuration, setTaskDuration] = useState<number | string>(25);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isStarting, setIsStarting] = useState(false);
 
@@ -65,14 +65,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
 
     const handleStartTask = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (taskDuration > 0 && isAudioReady && !isStarting) {
+        if (Number(taskDuration) > 0 && isAudioReady && !isStarting) {
             setIsStarting(true);
             try {
                 // Play start sound (NotificationContext will also warm up, but this is immediate user feedback if needed)
                 // Actually we rely on unlockAudio now.
 
                 // Call start task which will await unlock
-                await onStartTask(sessionTitle || "集中タイム", taskDuration, pendingSubtasks);
+                await onStartTask(sessionTitle || "集中タイム", Number(taskDuration) || 25, pendingSubtasks);
             } catch (e) {
                 console.error("Start task failed", e);
                 setIsStarting(false);
@@ -138,7 +138,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 <input
                                     type="number"
                                     value={taskDuration}
-                                    onChange={(e) => setTaskDuration(Number(e.target.value))}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        if (val === '') setTaskDuration('');
+                                        else setTaskDuration(Number(val));
+                                    }}
                                     className="w-full p-5 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-mono text-xl font-bold text-lime-800"
                                     min="1"
                                 />

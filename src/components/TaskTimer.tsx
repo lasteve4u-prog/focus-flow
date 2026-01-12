@@ -2,19 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNotification, type AlertType } from '../contexts/NotificationContext';
 import { NotificationModal } from './NotificationModal';
 import confetti from 'canvas-confetti';
+import type { Subtask } from '../types';
 interface TaskTimerProps {
     durationMinutes: number;
     taskTitle: string;
-    onStop: (interruptions?: string[]) => void;
+    subtasks?: Subtask[];
+    onStop: (interruptions: string[], finalSubtasks: Subtask[]) => void;
 }
 
-export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle, onStop }) => {
+export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle, subtasks: initialSubtasks, onStop }) => {
     const [timeLeft, setTimeLeft] = useState(durationMinutes * 60);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [isTimeUp, setIsTimeUp] = useState(false);
     const [alertType, setAlertType] = useState<AlertType>('default');
-    const [localInterruptions, setLocalInterruptions] = useState<string[]>([]);
+    const [interruptions, setInterruptions] = useState<string[]>([]);
+    const [subtasks, setSubtasks] = useState<Subtask[]>(initialSubtasks || []);
 
     // Notification Hook
     const { } = useNotification();
@@ -84,7 +87,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
 
     const handleStop = () => {
         if (timerRef.current) clearInterval(timerRef.current);
-        onStop(localInterruptions);
+        onStop(interruptions, subtasks);
     };
 
     const handleModalClose = () => {
@@ -101,6 +104,35 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                     <p className="uppercase tracking-[0.2em] text-sm font-black mb-3 text-lime-600 bg-lime-200 inline-block px-4 py-1 rounded-full">現在のタスクなのだ</p>
                     <h2 className="text-3xl md:text-5xl font-black text-green-900 tracking-tight mt-4">{taskTitle}</h2>
                 </div>
+
+                {/* Subtasks Display */}
+                {subtasks.length > 0 && (
+                    <div className="w-full mb-8 bg-white/50 rounded-2xl p-6 border-2 border-lime-200">
+                        <h3 className="text-sm font-black text-lime-700 mb-3 flex items-center gap-2">
+                            <span>📝</span> サブタスク
+                            <span className="text-xs font-normal bg-lime-200 px-2 py-0.5 rounded-full text-lime-800">
+                                {subtasks.filter(s => s.isCompleted).length}/{subtasks.length}
+                            </span>
+                        </h3>
+                        <div className="flex flex-col gap-2 max-h-40 overflow-y-auto">
+                            {subtasks.map((step) => (
+                                <label key={step.id} className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all ${step.isCompleted ? 'bg-lime-100 opacity-60' : 'bg-white hover:bg-lime-50'}`}>
+                                    <input
+                                        type="checkbox"
+                                        checked={step.isCompleted}
+                                        onChange={() => {
+                                            setSubtasks(prev => prev.map(s => s.id === step.id ? { ...s, isCompleted: !s.isCompleted } : s));
+                                        }}
+                                        className="w-5 h-5 text-lime-500 rounded focus:ring-lime-400 border-gray-300"
+                                    />
+                                    <span className={`font-bold text-sm ${step.isCompleted ? 'line-through text-lime-600' : 'text-green-800'}`}>
+                                        {step.title}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="relative mb-8 w-full max-w-lg">
                     {/* Visual Progress Bar */}
@@ -141,7 +173,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                         onClick={() => {
                             const note = prompt("あとでやることをメモするのだ！✍️");
                             if (note) {
-                                setLocalInterruptions(prev => [...prev, note]);
+                                setInterruptions(prev => [...prev, note]);
                                 alert("メモしたのだ！集中に戻るのだ！😤");
                             }
                         }}

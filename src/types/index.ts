@@ -5,6 +5,12 @@ export interface Event {
   endTime: string;   // "HH:mm"
 }
 
+export interface Subtask {
+  id: string;
+  title: string;
+  isCompleted: boolean;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -14,6 +20,7 @@ export interface Task {
   toiletDoneAt?: string; // ISO String for forced check
   paperDoneAt?: string;  // ISO String for forced check
   description?: string;
+  subtasks?: Subtask[];
 }
 
 export interface DailyLog {

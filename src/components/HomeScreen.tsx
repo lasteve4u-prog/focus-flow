@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import type { DailyLog, Event } from '../types';
+import type { DailyLog, Event, Subtask } from '../types';
 import { exportToMarkdown } from '../utils/exporter';
 
 import { StampCard } from './StampCard';
+import { TaskBreakdownModal } from './TaskBreakdownModal';
 
 interface HomeScreenProps {
     dailyLog: DailyLog;
     onAddEvent: (title: string, start: string, end: string) => void;
     onUpdateEvent: (event: Event) => void;
     onDeleteEvent: (id: string) => void;
-    onStartTask: (title: string, duration: number) => Promise<void>; // Updated to Promise
+    onStartTask: (title: string, duration: number, subtasks?: Subtask[]) => Promise<void>; // Updated to Promise
     onDeleteTask: (taskId: string) => void;
     isAudioReady: boolean;
     stamps: Record<string, boolean>;
@@ -24,6 +25,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     const [isStarting, setIsStarting] = useState(false);
 
     const [sessionTitle, setSessionTitle] = useState('');
+    const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
+    const [pendingSubtasks, setPendingSubtasks] = useState<Subtask[]>([]);
 
     const handleSubmitEvent = (e: React.FormEvent) => {
         e.preventDefault();
@@ -69,7 +72,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 // Actually we rely on unlockAudio now.
 
                 // Call start task which will await unlock
-                await onStartTask(sessionTitle || "集中タイム", taskDuration);
+                await onStartTask(sessionTitle || "集中タイム", taskDuration, pendingSubtasks);
             } catch (e) {
                 console.error("Start task failed", e);
                 setIsStarting(false);
@@ -119,6 +122,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 onChange={(e) => setSessionTitle(e.target.value)}
                                 className="w-full p-4 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-bold text-lg text-lime-800 placeholder-lime-300"
                             />
+                            {/* Magic Breakdown Button */}
+                            <button
+                                type="button"
+                                onClick={() => setIsBreakdownModalOpen(true)}
+                                className="absolute right-3 top-[2.4rem] text-2xl hover:scale-110 transition-transform p-2 bg-lime-100 hover:bg-lime-200 rounded-full"
+                                title="AIでタスクを分解するのだ！"
+                            >
+                                🪄
+                            </button>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-end">
                             <div className="flex-1">
@@ -145,6 +157,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                         </div>
                     </form>
                 </section>
+
+                <TaskBreakdownModal
+                    isOpen={isBreakdownModalOpen}
+                    onClose={() => setIsBreakdownModalOpen(false)}
+                    taskTitle={sessionTitle}
+                    onConfirm={(subtasks) => {
+                        setPendingSubtasks(subtasks);
+                        setIsBreakdownModalOpen(false);
+                        // Optional: auto-start or just show visual feedback that subtasks are attached?
+                        // For now, let's just create a toast or visual indicator.
+                        alert(`${subtasks.length}個のサブタスクをセットしたのだ！`);
+                    }}
+                />
 
                 {/* Schedule / Events */}
                 <section>

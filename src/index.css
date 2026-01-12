@@ -121,6 +121,20 @@ body {
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
 }
 
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
 .btn-puni:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.1);

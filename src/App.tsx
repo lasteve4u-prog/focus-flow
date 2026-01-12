@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useStamps } from './hooks/useStamps'
-import type { DailyLog, Event, Task } from './types'
+import type { DailyLog, Event, Task, Subtask } from './types'
 import { NotificationProvider, useNotification } from './contexts/NotificationContext'
 import { HomeScreen } from './components/HomeScreen'
 import { TaskTimer } from './components/TaskTimer'
@@ -23,7 +23,7 @@ function AppContent() {
   });
 
   const [view, setView] = useState<ViewState>('HOME');
-  const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; interruptions?: string[] } | null>(null);
+  const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; interruptions?: string[]; subtasks?: Subtask[] } | null>(null);
 
   const { unlockAudio, playAlert, stopAlert, isReady } = useNotification();
   const { stamps, addStamp } = useStamps();
@@ -43,7 +43,7 @@ function AppContent() {
     setDailyLog(prev => ({ ...prev, events: [...prev.events, newEvent] }));
   };
 
-  const startTask = async (title: string, duration: number) => {
+  const startTask = async (title: string, duration: number, subtasks?: Subtask[]) => {
     // Explicitly unlock audio on start to ensure context is ready
     await unlockAudio();
 
@@ -53,17 +53,17 @@ function AppContent() {
       playAlert('start');
     }, 100);
 
-    setCurrentTask({ title, duration });
+    setCurrentTask({ title, duration, subtasks });
     // Also record start of task logic if needed
     setView('TIMER');
   };
 
-  const stopTask = (interruptions?: string[]) => {
+  const stopTask = (interruptions?: string[], finalSubtasks?: Subtask[]) => {
     // Explicitly stop any playing alerts (like the timeout loop)
     stopAlert();
 
     if (currentTask) {
-      setCurrentTask({ ...currentTask, interruptions });
+      setCurrentTask({ ...currentTask, interruptions, subtasks: finalSubtasks || currentTask.subtasks });
     }
     setView('CHECKLIST');
   };
@@ -82,7 +82,8 @@ function AppContent() {
         paperDoneAt: new Date().toISOString(),
         description: currentTask.interruptions && currentTask.interruptions.length > 0
           ? `[割り込みメモ]\n- ${currentTask.interruptions.join('\n- ')}`
-          : undefined
+          : undefined,
+        subtasks: currentTask.subtasks
       };
       setDailyLog(prev => ({ ...prev, tasks: [...prev.tasks, newTask] }));
       taskForStamp = newTask;
@@ -166,6 +167,7 @@ function AppContent() {
           <TaskTimer
             durationMinutes={currentTask?.duration}
             taskTitle={currentTask?.title}
+            subtasks={currentTask?.subtasks}
             onStop={stopTask}
           />
         )}

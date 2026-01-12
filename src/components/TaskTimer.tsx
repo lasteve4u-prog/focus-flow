@@ -46,6 +46,52 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
         };
     }, []);
 
+    // Focus Mode Logic
+    const [focusIndex, setFocusIndex] = useState(0);
+    const [isFocusMode, setIsFocusMode] = useState(true); // Default to focus mode if subtasks exist
+
+    const currentSubtask = subtasks[focusIndex];
+    const isAllSubtasksComplete = subtasks.length > 0 && subtasks.every(s => s.isCompleted);
+
+    const handleNextSubtask = () => {
+        // Mark current as done
+        const updated = subtasks.map((s, i) => i === focusIndex ? { ...s, isCompleted: true } : s);
+        setSubtasks(updated);
+
+        // Move to next incomplete
+        const nextIndex = updated.findIndex((s, i) => i > focusIndex && !s.isCompleted);
+        if (nextIndex !== -1) {
+            setFocusIndex(nextIndex);
+        } else {
+            // Check from beginning if any skipped
+            const firstIncomplete = updated.findIndex(s => !s.isCompleted);
+            if (firstIncomplete !== -1) {
+                setFocusIndex(firstIncomplete);
+            } else {
+                // All done
+                setIsFocusMode(false); // Switch to list view to show success or empty
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+    };
+
+    const handleSkipSubtask = () => {
+        // Just move index
+        const nextIndex = subtasks.findIndex((s, i) => i > focusIndex && !s.isCompleted);
+        if (nextIndex !== -1) {
+            setFocusIndex(nextIndex);
+        } else {
+            const firstIncomplete = subtasks.findIndex(s => !s.isCompleted);
+            if (firstIncomplete !== -1) {
+                setFocusIndex(firstIncomplete);
+            }
+        }
+    };
+
     // Notification Logic
     useEffect(() => {
         const checkNotification = (remainingSec: number) => {
@@ -100,41 +146,94 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
     return (
         <div className="flex flex-col items-center justify-center flex-1 w-full bg-lime-100 text-green-900 p-8 rounded-[2rem] shadow-2xl animate-fade-in border-4 border-lime-300">
             <div className="w-full max-w-2xl flex flex-col items-center">
-                <div className="mb-12 text-center text-lime-800">
+                <div className="mb-4 text-center text-lime-800">
                     <p className="uppercase tracking-[0.2em] text-sm font-black mb-3 text-lime-600 bg-lime-200 inline-block px-4 py-1 rounded-full">現在のタスクなのだ</p>
-                    <h2 className="text-3xl md:text-5xl font-black text-green-900 tracking-tight mt-4">{taskTitle}</h2>
+                    <h2 className="text-3xl md:text-5xl font-black text-green-900 tracking-tight mt-4 mb-2">{taskTitle}</h2>
                 </div>
 
-                {/* Subtasks Display */}
+                {/* Subtasks Display (Focus Mode or List Mode) */}
                 {subtasks.length > 0 && (
-                    <div className="w-full mb-8 bg-white/50 rounded-2xl p-6 border-2 border-lime-200">
-                        <h3 className="text-sm font-black text-lime-700 mb-3 flex items-center gap-2">
-                            <span>📝</span> サブタスク
-                            <span className="text-xs font-normal bg-lime-200 px-2 py-0.5 rounded-full text-lime-800">
-                                {subtasks.filter(s => s.isCompleted).length}/{subtasks.length}
-                            </span>
-                        </h3>
-                        <div className="flex flex-col gap-2 max-h-40 overflow-y-auto">
-                            {subtasks.map((step) => (
-                                <label key={step.id} className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-all ${step.isCompleted ? 'bg-lime-100 opacity-60' : 'bg-white hover:bg-lime-50'}`}>
-                                    <input
-                                        type="checkbox"
-                                        checked={step.isCompleted}
-                                        onChange={() => {
-                                            setSubtasks(prev => prev.map(s => s.id === step.id ? { ...s, isCompleted: !s.isCompleted } : s));
-                                        }}
-                                        className="w-5 h-5 text-lime-500 rounded focus:ring-lime-400 border-gray-300"
-                                    />
-                                    <span className={`font-bold text-sm ${step.isCompleted ? 'line-through text-lime-600' : 'text-green-800'}`}>
-                                        {step.title}
-                                    </span>
-                                </label>
-                            ))}
+                    <div className="w-full mb-8">
+                        <div className="flex justify-between items-center mb-4 px-2">
+                            <h3 className="text-sm font-black text-lime-700 flex items-center gap-2">
+                                <span>📝</span> サブタスク
+                                <span className="text-xs font-normal bg-lime-200 px-2 py-0.5 rounded-full text-lime-800">
+                                    {subtasks.filter(s => s.isCompleted).length}/{subtasks.length}
+                                </span>
+                            </h3>
+                            <button
+                                onClick={() => setIsFocusMode(!isFocusMode)}
+                                className="text-xs font-bold text-lime-600 underline hover:text-lime-800"
+                            >
+                                {isFocusMode ? "リスト表示にする" : "集中モードにする"}
+                            </button>
                         </div>
+
+                        {/* Focus View */}
+                        {isFocusMode && currentSubtask && !isAllSubtasksComplete ? (
+                            <div className="bg-white rounded-[2rem] p-8 border-4 border-lime-400 shadow-xl flex flex-col items-center text-center animate-slide-up relative overflow-hidden">
+                                <div className="absolute top-0 left-0 w-full h-2 bg-gray-100">
+                                    <div
+                                        className="h-full bg-lime-500 transition-all duration-300"
+                                        style={{ width: `${(subtasks.filter(s => s.isCompleted).length / subtasks.length) * 100}%` }}
+                                    />
+                                </div>
+                                <div className="mt-4 mb-2 text-lime-500 font-bold uppercase tracking-widest text-xs">
+                                    Current Focus
+                                </div>
+                                <h4 className="text-2xl md:text-3xl font-black text-green-900 mb-8 leading-relaxed">
+                                    {currentSubtask.title}
+                                </h4>
+
+                                <div className="flex gap-4 w-full">
+                                    <button
+                                        onClick={handleSkipSubtask}
+                                        className="px-6 py-4 rounded-2xl font-bold text-lime-600 bg-lime-50 hover:bg-lime-100 transition-colors"
+                                    >
+                                        スキップ
+                                    </button>
+                                    <button
+                                        onClick={handleNextSubtask}
+                                        className="flex-1 px-6 py-4 rounded-2xl font-black text-white bg-lime-500 hover:bg-lime-600 shadow-[0_4px_0_rgb(65,130,20)] active:translate-y-1 active:shadow-none transition-all text-xl"
+                                    >
+                                        完了！次へ 👉
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            /* List View */
+                            <div className="bg-white/50 rounded-2xl p-6 border-2 border-lime-200 animate-fade-in">
+                                {isAllSubtasksComplete && (
+                                    <div className="text-center mb-4 p-4 bg-lime-100 rounded-xl border border-lime-300 text-lime-700 font-bold">
+                                        🎉 全て完了したのだ！お疲れ様なのだ！
+                                    </div>
+                                )}
+                                <div className="flex flex-col gap-2 max-h-60 overflow-y-auto">
+                                    {subtasks.map((step, idx) => (
+                                        <label key={step.id} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer transition-all ${step.isCompleted ? 'bg-lime-100 opacity-60' : (idx === focusIndex && isFocusMode) ? 'bg-lime-50 border-2 border-lime-300' : 'bg-white hover:bg-lime-50'}`}>
+                                            <input
+                                                type="checkbox"
+                                                checked={step.isCompleted}
+                                                onChange={() => {
+                                                    setSubtasks(prev => prev.map(s => s.id === step.id ? { ...s, isCompleted: !s.isCompleted } : s));
+                                                }}
+                                                className="w-6 h-6 text-lime-500 rounded focus:ring-lime-400 border-gray-300"
+                                            />
+                                            <span className={`font-bold text-md ${step.isCompleted ? 'line-through text-lime-600' : 'text-green-800'}`}>
+                                                {step.title}
+                                            </span>
+                                            {idx === focusIndex && !step.isCompleted && (
+                                                <span className="ml-auto text-xs bg-lime-500 text-white px-2 py-1 rounded-full font-bold">NOW</span>
+                                            )}
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
 
-                <div className="relative mb-8 w-full max-w-lg">
+                <div className="relative mb-8 w-full max-w-lg mt-4">
                     {/* Visual Progress Bar */}
                     <div className="w-full h-6 bg-lime-200/50 rounded-full overflow-hidden border-2 border-lime-300 shadow-inner relative">
                         <div
@@ -143,7 +242,6 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                                 }`}
                             style={{ width: `${(timeLeft / (durationMinutes * 60)) * 100}%` }}
                         />
-                        {/* Wrapper for the time text to sit nicely above or near the bar if needed */}
                     </div>
                 </div>
 

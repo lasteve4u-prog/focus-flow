@@ -115,22 +115,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     <form onSubmit={handleStartTask} className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1">
                             <label className="block text-sm font-bold text-lime-700 pl-2">何に集中するのだ？</label>
-                            <input
-                                type="text"
-                                placeholder="例: レポート作成"
-                                value={sessionTitle}
-                                onChange={(e) => setSessionTitle(e.target.value)}
-                                className="w-full p-4 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-bold text-lg text-lime-800 placeholder-lime-300"
-                            />
-                            {/* Magic Breakdown Button */}
-                            <button
-                                type="button"
-                                onClick={() => setIsBreakdownModalOpen(true)}
-                                className="absolute right-3 top-[2.4rem] text-2xl hover:scale-110 transition-transform p-2 bg-lime-100 hover:bg-lime-200 rounded-full"
-                                title="AIでタスクを分解するのだ！"
-                            >
-                                🪄
-                            </button>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="例: レポート作成"
+                                    value={sessionTitle}
+                                    onChange={(e) => setSessionTitle(e.target.value)}
+                                    className="w-full p-4 pr-14 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-bold text-lg text-lime-800 placeholder-lime-300"
+                                />
+                                {/* Magic Breakdown Button */}
+                                <button
+                                    type="button"
+                                    onClick={() => setIsBreakdownModalOpen(true)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-2xl hover:scale-110 transition-transform p-2 text-lime-500 hover:text-lime-700 active:scale-95"
+                                    title="AIでタスクを分解するのだ！"
+                                >
+                                    🪄
+                                </button>
+                            </div>
                         </div>
                         <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-end">
                             <div className="flex-1">

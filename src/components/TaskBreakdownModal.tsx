@@ -12,21 +12,21 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
     const [subtasks, setSubtasks] = useState<Subtask[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [newItemTitle, setNewItemTitle] = useState('');
+    const [suggestion, setSuggestion] = useState<string | null>(null);
 
-    // Mock "AI" Logic
+    // Big Task Detection & Suggestion Logic
     useEffect(() => {
         if (isOpen && taskTitle) {
-            setIsLoading(true);
-            setSubtasks([]); // Clear previous
+            setSubtasks([]);
+            setSuggestion(null);
 
-            // Simulate API delay
-            const timer = setTimeout(() => {
-                const mockSteps = generateMockSteps(taskTitle);
-                setSubtasks(mockSteps);
-                setIsLoading(false);
-            }, 1500);
+            const t = taskTitle.toLowerCase();
+            const isBigTask = t.includes('note') || t.includes('記事') || t.includes('report') || t.includes('執筆') || t.includes('作成');
+            const hasUrgency = t.includes('★') || t.includes('！') || t.includes('!');
 
-            return () => clearTimeout(timer);
+            if (isBigTask || hasUrgency) {
+                setSuggestion("これは大きなタスクなのだ！上の「AI自動分解」アイコンを押して、細かく分けるのがオススメなのだ✨");
+            }
         }
     }, [isOpen, taskTitle]);
 
@@ -122,9 +122,9 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
             { tag: "【準備】", keywords: ["準備", "エコバッグ", "宛先", "ブランチ", "インストール"], score: 20 },
             { tag: "【分別】", keywords: ["分別", "基準"], score: 22 },
             { tag: "【収録】", keywords: ["収録", "録音", "音声"], score: 30 },
-            { tag: "【修正】", keywords: ["修正", "直し", "校正"], score: 35 }, // Moved before Material
+            { tag: "【修正】", keywords: ["修正", "直し", "校正"], score: 35 },
             { tag: "【下書】", keywords: ["下書", "ドラフト"], score: 36 },
-            { tag: "【素材】", keywords: ["素材", "プロンプト", "画像生成", "画像", "ヘッダー"], score: 38 }, // Added keywords
+            { tag: "【素材】", keywords: ["素材", "プロンプト", "画像生成", "画像", "ヘッダー"], score: 38 },
             { tag: "【回収】", keywords: ["回収", "ゴミ", "拾う"], score: 40 },
             { tag: "【移動】", keywords: ["移動", "戻す"], score: 42 },
             { tag: "【実装】", keywords: ["実装", "ロジック", "関数"], score: 50 },
@@ -172,6 +172,18 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
             .map(({ _tempScore, ...item }) => item);
     };
 
+    const handleRunBreakdown = () => {
+        setIsLoading(true);
+        // Simulate API delay
+        setTimeout(() => {
+            const mockSteps = generateMockSteps(taskTitle);
+            const sortedSteps = autoTagAndSort(mockSteps); // Auto Sort on Generate
+            setSubtasks(sortedSteps);
+            setSuggestion(null); // Clear suggestion after run
+            setIsLoading(false);
+        }, 1500);
+    };
+
     const handleSort = () => {
         setSubtasks(prev => autoTagAndSort(prev));
     };
@@ -191,6 +203,14 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
         setSubtasks(prev => prev.filter(s => s.id !== id));
     };
 
+    const handleStart = () => {
+        if (subtasks.length === 0) {
+            alert("まずは分解ボタンを押して、手順を細かく分けるのだ！");
+            return;
+        }
+        onConfirm(subtasks);
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -198,20 +218,30 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
             <div className="bg-white rounded-[2rem] w-full max-w-lg shadow-2xl border-4 border-lime-300 flex flex-col max-h-[85vh]">
 
                 {/* Header */}
-                <div className="bg-lime-100 p-6 border-b-2 border-lime-200 rounded-t-[1.8rem]">
-                    <h3 className="text-xl font-black text-lime-800 flex items-center gap-2">
-                        <span className="text-2xl animate-spin-slow">🪄</span>
-                        <span>AI自動分解なのだ！</span>
-                    </h3>
-                    <button
-                        onClick={handleSort}
-                        className="ml-auto bg-white border-2 border-lime-300 text-lime-700 hover:bg-lime-50 font-bold px-3 py-1 rounded-xl text-sm transition-all shadow-sm active:translate-y-0.5"
-                    >
-                        ✨ 整える
-                    </button>
+                <div
+                    className="bg-lime-100 p-6 border-b-2 border-lime-200 rounded-t-[1.8rem] cursor-pointer hover:bg-lime-200 transition-colors group relative"
+                    onClick={handleRunBreakdown}
+                    title="クリックしてAI自動分解を実行！"
+                >
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-xl font-black text-lime-800 flex items-center gap-2">
+                            <span className="text-2xl animate-spin-slow group-hover:scale-125 transition-transform">🪄</span>
+                            <span>AI自動分解なのだ！</span>
+                        </h3>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); handleSort(); }}
+                            className="bg-white border-2 border-lime-300 text-lime-700 hover:bg-lime-50 font-bold px-3 py-1 rounded-xl text-sm transition-all shadow-sm active:translate-y-0.5"
+                        >
+                            ✨ 整える
+                        </button>
+                    </div>
                     <p className="text-lime-600 text-sm font-bold mt-1 truncate">
                         「{taskTitle}」を小さく分けたのだ
                     </p>
+                    {/* Tooltip hint on hover */}
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 bg-black/80 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10">
+                        クリックして分解！
+                    </div>
                 </div>
 
                 {/* Body */}
@@ -223,6 +253,22 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
                         </div>
                     ) : (
                         <div className="space-y-3">
+                            {/* Empty State / Suggestion */}
+                            {subtasks.length === 0 && (
+                                <div className="text-center py-8 text-gray-500">
+                                    {suggestion ? (
+                                        <div className="bg-yellow-100 border-2 border-yellow-300 p-4 rounded-xl mb-4 animate-bounce">
+                                            <p className="font-bold text-yellow-800 text-sm">{suggestion}</p>
+                                        </div>
+                                    ) : (
+                                        <p className="text-sm font-bold opacity-60 mb-2">まだ手順がないのだ...</p>
+                                    )}
+                                    <p className="text-xs">
+                                        上の <span className="text-xl">🪄</span> を押すと、AIが分解してくれるのだ！
+                                    </p>
+                                </div>
+                            )}
+
                             {subtasks.map((step, index) => (
                                 <div key={step.id} className="flex items-center gap-3 bg-white p-3 rounded-xl border-2 border-lime-100 shadow-sm animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
                                     <div className="bg-lime-200 text-lime-700 font-black w-6 h-6 rounded-full flex items-center justify-center text-xs flex-shrink-0">
@@ -272,10 +318,9 @@ export const TaskBreakdownModal: React.FC<TaskBreakdownModalProps> = ({ isOpen, 
                         やめる
                     </button>
                     <button
-                        onClick={() => onConfirm(subtasks)}
-                        disabled={isLoading || subtasks.length === 0}
+                        onClick={handleStart}
                         className={`flex-1 py-3 font-black text-white rounded-full shadow-md transition-all 
-                            ${(isLoading || subtasks.length === 0)
+                            ${(isLoading)
                                 ? 'bg-gray-300 cursor-not-allowed'
                                 : 'bg-lime-500 hover:bg-lime-600 active:translate-y-1 shadow-[0_4px_0_rgb(65,130,20)]'
                             }`}

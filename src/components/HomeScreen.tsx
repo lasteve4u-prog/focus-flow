@@ -153,7 +153,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
                                     ${(!isAudioReady || isStarting)
                                         ? 'bg-gray-400 cursor-not-allowed shadow-none'
-                                        : 'bg-lime-500 hover:bg-lime-600'
+                                        : 'bg-green-700 hover:bg-green-800'
                                     }`}
                             >
                                 {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : '集中を開始するのだ！')}

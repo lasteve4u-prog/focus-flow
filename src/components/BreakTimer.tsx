@@ -3,11 +3,11 @@ import { useNotification } from '../contexts/NotificationContext';
 
 interface BreakTimerProps {
     onFinish: () => void;
+    durationMinutes: number;
 }
 
-export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
-    const DURATION_MINUTES = 5;
-    const [timeLeft, setTimeLeft] = useState(DURATION_MINUTES * 60);
+export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish, durationMinutes }) => {
+    const [timeLeft, setTimeLeft] = useState(durationMinutes * 60);
     const [endTime, setEndTime] = useState<number | null>(null);
     const { playAlert, stopAlert } = useNotification();
     const timerRef = useRef<number | null>(null);
@@ -20,7 +20,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
 
     useEffect(() => {
         // Calculate end time on mount
-        const durationMs = DURATION_MINUTES * 60 * 1000;
+        const durationMs = durationMinutes * 60 * 1000;
         const targetTime = Date.now() + durationMs;
         setEndTime(targetTime);
     }, []);

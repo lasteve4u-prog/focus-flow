@@ -23,7 +23,7 @@ function AppContent() {
   });
 
   const [view, setView] = useState<ViewState>('HOME');
-  const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; interruptions?: string[]; subtasks?: Subtask[] } | null>(null);
+  const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; breakDuration: number; interruptions?: string[]; subtasks?: Subtask[] } | null>(null);
 
   const { unlockAudio, playAlert, stopAlert, isReady } = useNotification();
   const { stamps, addStamp } = useStamps();
@@ -43,7 +43,7 @@ function AppContent() {
     setDailyLog(prev => ({ ...prev, events: [...prev.events, newEvent] }));
   };
 
-  const startTask = async (title: string, duration: number, subtasks?: Subtask[]) => {
+  const startTask = async (title: string, duration: number, breakDuration: number, subtasks?: Subtask[]) => {
     // Explicitly unlock audio on start to ensure context is ready
     await unlockAudio();
 
@@ -53,7 +53,7 @@ function AppContent() {
       playAlert('start');
     }, 100);
 
-    setCurrentTask({ title, duration, subtasks });
+    setCurrentTask({ title, duration, breakDuration, subtasks });
     // Also record start of task logic if needed
     setView('TIMER');
   };
@@ -176,8 +176,8 @@ function AppContent() {
           <ForcedChecklist onComplete={completeChecklist} />
         )}
 
-        {view === 'BREAK' && (
-          <BreakTimer onFinish={finishBreak} />
+        {view === 'BREAK' && currentTask && (
+          <BreakTimer onFinish={finishBreak} durationMinutes={currentTask.breakDuration} />
         )}
 
       </div>

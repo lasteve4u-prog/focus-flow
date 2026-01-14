@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { WheelPicker } from '@ncdai/react-wheel-picker';
+import '@ncdai/react-wheel-picker/dist/index.css';
 import type { DailyLog, Event, Subtask } from '../types';
 import { exportToMarkdown } from '../utils/exporter';
 
@@ -10,7 +12,7 @@ interface HomeScreenProps {
     onAddEvent: (title: string, start: string, end: string) => void;
     onUpdateEvent: (event: Event) => void;
     onDeleteEvent: (id: string) => void;
-    onStartTask: (title: string, duration: number, subtasks?: Subtask[]) => Promise<void>; // Updated to Promise
+    onStartTask: (title: string, duration: number, breakDuration: number, subtasks?: Subtask[]) => Promise<void>; // Updated to Promise
     onDeleteTask: (taskId: string) => void;
     isAudioReady: boolean;
     stamps: Record<string, boolean>;
@@ -20,13 +22,24 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
-    const [taskDuration, setTaskDuration] = useState<number | string>(25);
+    const [taskDuration, setTaskDuration] = useState<number>(25);
+    const [breakDuration, setBreakDuration] = useState<number>(5);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [isStarting, setIsStarting] = useState(false);
 
     const [sessionTitle, setSessionTitle] = useState('');
     const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
     const [pendingSubtasks, setPendingSubtasks] = useState<Subtask[]>([]);
+
+    const focusOptions = useMemo(() => Array.from({ length: 24 }, (_, i) => (i + 1) * 5).map(val => ({
+        value: val,
+        label: <span className="font-bold text-xl">{val} <span className="text-sm">分</span></span>
+    })), []);
+
+    const breakOptions = useMemo(() => Array.from({ length: 30 }, (_, i) => i + 1).map(val => ({
+        value: val,
+        label: <span className="font-bold text-xl">{val} <span className="text-sm">分</span></span>
+    })), []);
 
     const handleSubmitEvent = (e: React.FormEvent) => {
         e.preventDefault();
@@ -72,7 +85,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 // Actually we rely on unlockAudio now.
 
                 // Call start task which will await unlock
-                await onStartTask(sessionTitle || "集中タイム", Number(taskDuration) || 25, pendingSubtasks);
+                await onStartTask(sessionTitle || "集中タイム", Number(taskDuration) || 25, Number(breakDuration) || 5, pendingSubtasks);
             } catch (e) {
                 console.error("Start task failed", e);
                 setIsStarting(false);
@@ -110,7 +123,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 <section className="bg-white p-8 rounded-[2rem] shadow-lg border-4 border-lime-200 transition-transform hover:scale-[1.01] duration-300">
                     <h2 className="text-2xl font-black text-green-800 mb-6 flex items-center gap-3">
                         <span className="text-3xl animate-bounce">⏱️</span>
-                        <span>セッションを開始するのだ！</span>
+                        <span>セッションを設定するのだ！</span>
                     </h2>
                     <form onSubmit={handleStartTask} className="flex flex-col gap-4">
                         <div className="flex flex-col gap-1">
@@ -134,33 +147,49 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 </button>
                             </div>
                         </div>
-                        <div className="flex flex-col sm:flex-row gap-6 items-stretch sm:items-end">
-                            <div className="flex-1">
-                                <label className="block text-sm font-bold text-lime-700 mb-2 pl-2">集中時間 (分)</label>
-                                <input
-                                    type="number"
-                                    value={taskDuration}
-                                    onChange={(e) => {
-                                        const val = e.target.value;
-                                        if (val === '') setTaskDuration('');
-                                        else setTaskDuration(Number(val));
-                                    }}
-                                    className="w-full p-5 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-mono text-xl font-bold text-lime-800"
-                                    min="1"
-                                />
+                        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+
+                            {/* Focus Time Picker */}
+                            <div className="flex flex-col items-center gap-2">
+                                <label className="text-sm font-bold text-lime-700">集中時間</label>
+                                <div className="bg-lime-50 rounded-2xl border-2 border-lime-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
+                                    <WheelPicker
+                                        value={taskDuration}
+                                        onValueChange={(val) => setTaskDuration(Number(val))}
+                                        options={focusOptions}
+                                        optionItemHeight={40}
+                                        visibleCount={3}
+                                    />
+                                </div>
                             </div>
-                            <button
-                                type="submit"
-                                disabled={!isAudioReady || isStarting}
-                                className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
-                                    ${(!isAudioReady || isStarting)
-                                        ? 'bg-gray-400 cursor-not-allowed shadow-none'
-                                        : 'bg-green-700 hover:bg-green-800'
-                                    }`}
-                            >
-                                {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : '集中を開始するのだ！')}
-                            </button>
+
+                            {/* Break Time Picker */}
+                            <div className="flex flex-col items-center gap-2">
+                                <label className="text-sm font-bold text-lime-700">休憩時間</label>
+                                <div className="bg-blue-50 rounded-2xl border-2 border-blue-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
+                                    <WheelPicker
+                                        value={breakDuration}
+                                        onValueChange={(val) => setBreakDuration(Number(val))}
+                                        options={breakOptions}
+                                        optionItemHeight={40}
+                                        visibleCount={3}
+                                    />
+                                </div>
+                            </div>
+
                         </div>
+                        <button
+                            type="submit"
+                            disabled={!isAudioReady || isStarting}
+                            className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
+                                    ${(!isAudioReady || isStarting)
+                                    ? 'bg-gray-400 cursor-not-allowed shadow-none'
+                                    : 'bg-green-700 hover:bg-green-800'
+                                }`}
+                        >
+                            {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : 'この設定で始めるのだ！')}
+                        </button>
+
                     </form>
                 </section>
 
@@ -356,6 +385,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };

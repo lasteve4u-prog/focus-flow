@@ -36,24 +36,28 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
         const durationMs = durationMinutes * 60 * 1000;
         const targetTime = Date.now() + durationMs;
         setEndTime(targetTime);
+    }, []);
+
+    useEffect(() => {
+        if (!endTime) return;
 
         timerRef.current = window.setInterval(() => {
             const now = Date.now();
-            const diff = targetTime - now;
+            const diff = endTime - now;
             // Calculate remaining seconds, ensuring it doesn't go below 0
             const remaining = Math.max(0, Math.ceil(diff / 1000));
-            
+
             setTimeLeft(remaining);
 
             if (remaining <= 0) {
                 if (timerRef.current) clearInterval(timerRef.current);
             }
-        }, 200); // Check more frequently for smoothness, though logic is 1s based
+        }, 200);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, []);
+    }, [endTime]);
 
     // Focus Mode Logic
     const [focusIndex, setFocusIndex] = useState(0);

@@ -23,10 +23,14 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
         const durationMs = DURATION_MINUTES * 60 * 1000;
         const targetTime = Date.now() + durationMs;
         setEndTime(targetTime);
+    }, []);
+
+    useEffect(() => {
+        if (!endTime) return;
 
         timerRef.current = window.setInterval(() => {
             const now = Date.now();
-            const diff = targetTime - now;
+            const diff = endTime - now;
             // Calculate remaining seconds, ensuring it doesn't go below 0
             const remaining = Math.max(0, Math.ceil(diff / 1000));
 
@@ -40,7 +44,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
         };
-    }, []);
+    }, [endTime]);
 
     const hasPlayedRef = useRef(false);
 

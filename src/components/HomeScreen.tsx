@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { WheelPicker } from '@ncdai/react-wheel-picker';
-import '@ncdai/react-wheel-picker/dist/index.css';
+import '@ncdai/react-wheel-picker/style.css';
 import type { DailyLog, Event, Subtask } from '../types';
 import { exportToMarkdown } from '../utils/exporter';
 
@@ -155,7 +155,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 <div className="bg-lime-50 rounded-2xl border-2 border-lime-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
                                     <WheelPicker
                                         value={taskDuration}
-                                        onValueChange={(val) => setTaskDuration(Number(val))}
+                                        onValueChange={(val) => {
+                                            const newVal = Number(val);
+                                            if (newVal !== taskDuration) {
+                                                setTaskDuration(newVal);
+                                            }
+                                        }}
                                         options={focusOptions}
                                         optionItemHeight={40}
                                         visibleCount={3}
@@ -169,7 +174,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 <div className="bg-blue-50 rounded-2xl border-2 border-blue-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
                                     <WheelPicker
                                         value={breakDuration}
-                                        onValueChange={(val) => setBreakDuration(Number(val))}
+                                        onValueChange={(val) => {
+                                            const newVal = Number(val);
+                                            if (newVal !== breakDuration) {
+                                                setBreakDuration(newVal);
+                                            }
+                                        }}
                                         options={breakOptions}
                                         optionItemHeight={40}
                                         visibleCount={3}

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { WheelPicker } from '@ncdai/react-wheel-picker';
+import './WheelPicker.css';
 import type { Subtask } from '../types';
 import { TaskBreakdownModal } from './TaskBreakdownModal';
 

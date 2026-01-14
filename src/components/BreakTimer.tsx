@@ -8,6 +8,7 @@ interface BreakTimerProps {
 export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
     const DURATION_MINUTES = 5;
     const [timeLeft, setTimeLeft] = useState(DURATION_MINUTES * 60);
+    const [endTime, setEndTime] = useState<number | null>(null);
     const { playAlert, stopAlert } = useNotification();
     const timerRef = useRef<number | null>(null);
 
@@ -18,15 +19,23 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish }) => {
     };
 
     useEffect(() => {
+        // Calculate end time on mount
+        const durationMs = DURATION_MINUTES * 60 * 1000;
+        const targetTime = Date.now() + durationMs;
+        setEndTime(targetTime);
+
         timerRef.current = window.setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 0) {
-                    if (timerRef.current) clearInterval(timerRef.current);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+            const now = Date.now();
+            const diff = targetTime - now;
+            // Calculate remaining seconds, ensuring it doesn't go below 0
+            const remaining = Math.max(0, Math.ceil(diff / 1000));
+
+            setTimeLeft(remaining);
+
+            if (remaining <= 0) {
+                if (timerRef.current) clearInterval(timerRef.current);
+            }
+        }, 200);
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);

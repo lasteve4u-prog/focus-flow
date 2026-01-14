@@ -12,6 +12,7 @@ interface TaskTimerProps {
 
 export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle, subtasks: initialSubtasks, onStop }) => {
     const [timeLeft, setTimeLeft] = useState(durationMinutes * 60);
+    const [endTime, setEndTime] = useState<number | null>(null);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
     const [isTimeUp, setIsTimeUp] = useState(false);
@@ -31,15 +32,23 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
     };
 
     useEffect(() => {
+        // Calculate end time on mount
+        const durationMs = durationMinutes * 60 * 1000;
+        const targetTime = Date.now() + durationMs;
+        setEndTime(targetTime);
+
         timerRef.current = window.setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 0) {
-                    if (timerRef.current) clearInterval(timerRef.current);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
+            const now = Date.now();
+            const diff = targetTime - now;
+            // Calculate remaining seconds, ensuring it doesn't go below 0
+            const remaining = Math.max(0, Math.ceil(diff / 1000));
+            
+            setTimeLeft(remaining);
+
+            if (remaining <= 0) {
+                if (timerRef.current) clearInterval(timerRef.current);
+            }
+        }, 200); // Check more frequently for smoothness, though logic is 1s based
 
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);

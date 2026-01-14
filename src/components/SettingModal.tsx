@@ -1,6 +1,4 @@
-import React, { useState, useMemo } from 'react';
-import { WheelPicker } from '@ncdai/react-wheel-picker';
-import './WheelPicker.css';
+import React, { useState } from 'react';
 import type { Subtask } from '../types';
 import { TaskBreakdownModal } from './TaskBreakdownModal';
 
@@ -24,17 +22,6 @@ export const SettingModal: React.FC<SettingModalProps> = ({
     const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
     const [pendingSubtasks, setPendingSubtasks] = useState<Subtask[]>([]);
     const [isStarting, setIsStarting] = useState(false);
-
-    // Options for Pickers - Memoized to prevent re-creation
-    const focusOptions = useMemo(() => Array.from({ length: 24 }, (_, i) => (i + 1) * 5).map(val => ({
-        value: val,
-        label: <span className="font-bold text-xl">{val} <span className="text-sm">分</span></span>
-    })), []);
-
-    const breakOptions = useMemo(() => Array.from({ length: 30 }, (_, i) => i + 1).map(val => ({
-        value: val,
-        label: <span className="font-bold text-xl">{val} <span className="text-sm">分</span></span>
-    })), []);
 
     const handleStartTask = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,46 +69,27 @@ export const SettingModal: React.FC<SettingModalProps> = ({
                         </button>
                     </div>
                 </div>
-                <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-
-                    {/* Focus Time Picker */}
-                    <div className="flex flex-col items-center gap-2">
-                        <label className="text-sm font-bold text-lime-700">集中時間</label>
-                        <div className="bg-lime-50 rounded-2xl border-2 border-lime-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
-                            <WheelPicker
-                                value={taskDuration}
-                                onValueChange={(val) => {
-                                    const newVal = Number(val);
-                                    if (newVal !== taskDuration) {
-                                        setTaskDuration(newVal);
-                                    }
-                                }}
-                                options={focusOptions}
-                                optionItemHeight={40}
-                                visibleCount={3}
-                            />
-                        </div>
+                <div className="flex gap-4">
+                    <div className="flex-1 flex flex-col gap-1">
+                        <label className="block text-sm font-bold text-lime-700 pl-2">集中時間 (分)</label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={taskDuration}
+                            onChange={(e) => setTaskDuration(Number(e.target.value))}
+                            className="w-full p-4 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-bold text-lg text-lime-800"
+                        />
                     </div>
-
-                    {/* Break Time Picker */}
-                    <div className="flex flex-col items-center gap-2">
-                        <label className="text-sm font-bold text-lime-700">休憩時間</label>
-                        <div className="bg-blue-50 rounded-2xl border-2 border-blue-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
-                            <WheelPicker
-                                value={breakDuration}
-                                onValueChange={(val) => {
-                                    const newVal = Number(val);
-                                    if (newVal !== breakDuration) {
-                                        setBreakDuration(newVal);
-                                    }
-                                }}
-                                options={breakOptions}
-                                optionItemHeight={40}
-                                visibleCount={3}
-                            />
-                        </div>
+                    <div className="flex-1 flex flex-col gap-1">
+                        <label className="block text-sm font-bold text-lime-700 pl-2">休憩時間 (分)</label>
+                        <input
+                            type="number"
+                            min="1"
+                            value={breakDuration}
+                            onChange={(e) => setBreakDuration(Number(e.target.value))}
+                            className="w-full p-4 bg-blue-50 border-2 border-blue-100 rounded-[1.5rem] focus:ring-4 focus:ring-blue-200 focus:border-blue-400 outline-none transition-all font-bold text-lg text-blue-800"
+                        />
                     </div>
-
                 </div>
                 <button
                     type="submit"

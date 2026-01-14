@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react';
-import { WheelPicker } from '@ncdai/react-wheel-picker';
-import '@ncdai/react-wheel-picker/style.css';
+import React, { useState } from 'react';
 import type { DailyLog, Event, Subtask } from '../types';
 import { exportToMarkdown } from '../utils/exporter';
 
 import { StampCard } from './StampCard';
-import { TaskBreakdownModal } from './TaskBreakdownModal';
+// TaskBreakdownModal is now used inside SettingModal
+// import { TaskBreakdownModal } from './TaskBreakdownModal'; 
+import { SettingModal } from './SettingModal';
 
 interface HomeScreenProps {
     dailyLog: DailyLog;
@@ -22,24 +22,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
-    const [taskDuration, setTaskDuration] = useState<number>(25);
-    const [breakDuration, setBreakDuration] = useState<number>(5);
     const [editingId, setEditingId] = useState<string | null>(null);
-    const [isStarting, setIsStarting] = useState(false);
-
-    const [sessionTitle, setSessionTitle] = useState('');
-    const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
-    const [pendingSubtasks, setPendingSubtasks] = useState<Subtask[]>([]);
-
-    const focusOptions = useMemo(() => Array.from({ length: 24 }, (_, i) => (i + 1) * 5).map(val => ({
-        value: val,
-        label: <span className="font-bold text-xl">{val} <span className="text-sm">分</span></span>
-    })), []);
-
-    const breakOptions = useMemo(() => Array.from({ length: 30 }, (_, i) => i + 1).map(val => ({
-        value: val,
-        label: <span className="font-bold text-xl">{val} <span className="text-sm">分</span></span>
-    })), []);
 
     const handleSubmitEvent = (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,34 +59,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
         setEditingId(null);
     };
 
-    const handleStartTask = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (Number(taskDuration) > 0 && isAudioReady && !isStarting) {
-            setIsStarting(true);
-            try {
-                // Play start sound (NotificationContext will also warm up, but this is immediate user feedback if needed)
-                // Actually we rely on unlockAudio now.
-
-                // Call start task which will await unlock
-                await onStartTask(sessionTitle || "集中タイム", Number(taskDuration) || 25, Number(breakDuration) || 5, pendingSubtasks);
-            } catch (e) {
-                console.error("Start task failed", e);
-                setIsStarting(false);
-            }
-        }
-    };
-
-
-
-    // Better approach: Pass `playVoice` prop?
-    // Implementation Plan said: "Play praise-1 or praise-2 randomly when mounting if achievements exist."
-    // Okay, I will implement that.
-
-    // NOTE: HomeScreen doesn't know about `useNotification`.
-    // I will use `new Audio` which is consistent with `handleStartTask`.
-
-
-
     return (
         <div className="w-full">
             <div className="w-full space-y-8 mt-4 md:mt-8">
@@ -119,101 +74,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     </div>
                 </header>
 
-                {/* Task Starter */}
-                <section className="bg-white p-8 rounded-[2rem] shadow-lg border-4 border-lime-200 transition-transform hover:scale-[1.01] duration-300">
-                    <h2 className="text-2xl font-black text-green-800 mb-6 flex items-center gap-3">
-                        <span className="text-3xl animate-bounce">⏱️</span>
-                        <span>セッションを設定するのだ！</span>
-                    </h2>
-                    <form onSubmit={handleStartTask} className="flex flex-col gap-4">
-                        <div className="flex flex-col gap-1">
-                            <label className="block text-sm font-bold text-lime-700 pl-2">何に集中するのだ？</label>
-                            <div className="relative">
-                                <input
-                                    type="text"
-                                    placeholder="例: レポート作成"
-                                    value={sessionTitle}
-                                    onChange={(e) => setSessionTitle(e.target.value)}
-                                    className="w-full p-4 pr-14 bg-lime-50 border-2 border-lime-100 rounded-[1.5rem] focus:ring-4 focus:ring-lime-200 focus:border-lime-400 outline-none transition-all font-bold text-lg text-lime-800 placeholder-lime-300"
-                                />
-                                {/* Magic Breakdown Button */}
-                                <button
-                                    type="button"
-                                    onClick={() => setIsBreakdownModalOpen(true)}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-2xl hover:scale-110 transition-transform p-2 text-lime-500 hover:text-lime-700 active:scale-95"
-                                    title="AIでタスクを分解するのだ！"
-                                >
-                                    🪄
-                                </button>
-                            </div>
-                        </div>
-                        <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-
-                            {/* Focus Time Picker */}
-                            <div className="flex flex-col items-center gap-2">
-                                <label className="text-sm font-bold text-lime-700">集中時間</label>
-                                <div className="bg-lime-50 rounded-2xl border-2 border-lime-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
-                                    <WheelPicker
-                                        value={taskDuration}
-                                        onValueChange={(val) => {
-                                            const newVal = Number(val);
-                                            if (newVal !== taskDuration) {
-                                                setTaskDuration(newVal);
-                                            }
-                                        }}
-                                        options={focusOptions}
-                                        optionItemHeight={40}
-                                        visibleCount={3}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Break Time Picker */}
-                            <div className="flex flex-col items-center gap-2">
-                                <label className="text-sm font-bold text-lime-700">休憩時間</label>
-                                <div className="bg-blue-50 rounded-2xl border-2 border-blue-100 p-2 shadow-inner h-[180px] w-[140px] flex justify-center overflow-hidden">
-                                    <WheelPicker
-                                        value={breakDuration}
-                                        onValueChange={(val) => {
-                                            const newVal = Number(val);
-                                            if (newVal !== breakDuration) {
-                                                setBreakDuration(newVal);
-                                            }
-                                        }}
-                                        options={breakOptions}
-                                        optionItemHeight={40}
-                                        visibleCount={3}
-                                    />
-                                </div>
-                            </div>
-
-                        </div>
-                        <button
-                            type="submit"
-                            disabled={!isAudioReady || isStarting}
-                            className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
-                                    ${(!isAudioReady || isStarting)
-                                    ? 'bg-gray-400 cursor-not-allowed shadow-none'
-                                    : 'bg-green-700 hover:bg-green-800'
-                                }`}
-                        >
-                            {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : 'この設定で始めるのだ！')}
-                        </button>
-
-                    </form>
-                </section>
-
-                <TaskBreakdownModal
-                    isOpen={isBreakdownModalOpen}
-                    onClose={() => setIsBreakdownModalOpen(false)}
-                    taskTitle={sessionTitle}
-                    onConfirm={(subtasks) => {
-                        setPendingSubtasks(subtasks);
-                        setIsBreakdownModalOpen(false);
-                        // Optional: auto-start or just show visual feedback that subtasks are attached?
-                        // For now, let's just create a toast or visual indicator.
-                        alert(`${subtasks.length}個のサブタスクをセットしたのだ！`);
+                {/* Task Starter Section (Refactored to SettingModal) */}
+                <SettingModal
+                    initialFocusDuration={25}
+                    initialBreakDuration={5}
+                    onStart={async (focusDuration, breakDuration, title, subtasks) => {
+                        await onStartTask(title, focusDuration, breakDuration, subtasks);
                     }}
+                    isAudioReady={isAudioReady}
                 />
 
                 {/* Schedule / Events */}

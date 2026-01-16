@@ -69,8 +69,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             FocusFlow
                         </h1>
                     </div>
-                    <div className="bg-lime-100/50 px-6 py-1 rounded-full border border-lime-200">
-                        <p className="text-lime-700 text-lg font-bold tracking-wider">{dailyLog.date}</p>
+                    <div className="bg-lime-100/50 px-8 py-3 rounded-full border border-lime-200">
+                        <p className="text-lime-700 text-4xl font-bold tracking-wider">
+                            {new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-')}
+                        </p>
                     </div>
                 </header>
 

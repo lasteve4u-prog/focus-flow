@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
-export type AlertType = '1min' | '5min' | 'timeout' | 'default' | 'break-start' | 'break-end' | 'memo' | 'praise-1' | 'praise-2' | 'start';
+export type AlertType = '1min' | '5min' | '10min' | '15min' | 'timeout' | 'default' | 'break-start' | 'break-end' | 'memo' | 'praise-1' | 'praise-2' | 'start';
 
 interface NotificationContextType {
     isAlertPlaying: boolean;
@@ -43,6 +43,8 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                     'default': '/sounds/alert.mp3',
                     '1min': '/sounds/1min.mp3',
                     '5min': '/sounds/5min.mp3',
+                    '10min': '/sounds/zunda_10min.wav',
+                    '15min': '/sounds/zunda_15min.wav',
                     'timeout': '/sounds/timeout.mp3',
                     'break-start': '/sounds/break_start.mp3',
                     'break-end': '/sounds/break_end.mp3',

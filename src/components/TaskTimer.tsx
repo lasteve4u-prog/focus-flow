@@ -118,6 +118,8 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
 
                 if (remainingMin === 1) setAlertType('1min');
                 else if (remainingMin === 5) setAlertType('5min');
+                else if (remainingMin === 10) setAlertType('10min');
+                else if (remainingMin === 15) setAlertType('15min');
                 else setAlertType('default');
 
                 setAlertMessage(`${remainingMin} 分前なのだ！集中するのだ。`);

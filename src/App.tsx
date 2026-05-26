@@ -98,10 +98,9 @@ function AppContent() {
     // Stamp Logic
     if (taskForStamp) {
       const currentTasks = dailyLog.tasks;
-      const totalDuration = currentTasks.reduce((acc, t) => acc + t.durationMinutes, 0) + taskForStamp.durationMinutes;
       const totalSessions = currentTasks.length + 1;
 
-      if (totalDuration >= 120 || totalSessions >= 4) {
+      if (totalSessions >= 3) {
         const isNew = addStamp(dailyLog.date);
         if (isNew) {
           setTimeout(() => {

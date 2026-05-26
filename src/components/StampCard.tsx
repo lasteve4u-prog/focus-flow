@@ -64,7 +64,7 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
             </div>
 
             <div className="mt-6 text-center text-xs font-bold text-lime-600 bg-lime-100/50 py-2 rounded-full">
-                <p>1日 120分 or 4回集中でスタンプGETなのだ！✨</p>
+                <p>1日3回の集中でスタンプGETなのだ！✨</p>
             </div>
         </section>
     );

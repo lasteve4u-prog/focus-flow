@@ -6,6 +6,13 @@ import { StampCard } from './StampCard';
 import { SettingModal } from './SettingModal';
 import ZundaShop from './ZundaShop';
 
+const getWeekdayStr = (dateStr: string) => {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day);
+    const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+    return weekdays[dateObj.getDay()];
+};
+
 interface HomeScreenProps {
     dailyLog: DailyLog;
     onAddEvent: (title: string, start: string, end: string) => void;
@@ -77,7 +84,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     </div>
                     <div className="bg-lime-100/50 px-8 py-3 rounded-full border border-lime-200">
                         <p className="text-lime-700 text-4xl font-bold tracking-wider">
-                            {new Date().toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\//g, '-')}
+                            {`${dailyLog.date} (${getWeekdayStr(dailyLog.date)})`}
                         </p>
                     </div>
                 </header>

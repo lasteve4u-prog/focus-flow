@@ -8,12 +8,11 @@ interface StampCardProps {
 export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => {
     const [days, setDays] = useState<string[]>([]);
 
+    const [yearStr, monthStr] = currentDate.split('-');
+    const year = parseInt(yearStr);
+    const month = parseInt(monthStr) - 1; // 0-indexed
 
     useEffect(() => {
-        // Generate days for the current month
-        const date = new Date(currentDate);
-        const year = date.getFullYear();
-        const month = date.getMonth();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
         const newDays = Array.from({ length: daysInMonth }, (_, i) => {
@@ -22,18 +21,12 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
         });
 
         setDays(newDays);
-    }, [currentDate]);
+    }, [currentDate, year, month]);
 
-    // Check if we just got a stamp today to trigger animation
-    useEffect(() => {
-        if (stamps[currentDate]) {
-            // In a real app we might want a more robust "just earned" state, 
-            // but for now, if it's there, we can animate on mount or just be static.
-            // Let's make it static mainly, but maybe a subtle pulse.
-        }
-    }, [stamps, currentDate]);
-
-    const titleDate = new Date(currentDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long' });
+    const titleDate = `${year}年${month + 1}月`;
+    const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+    const firstDayOfWeek = new Date(year, month, 1).getDay(); // 0: 日, 1: 月, ..., 6: 土
+    const emptyCells = Array.from({ length: firstDayOfWeek });
 
     return (
         <section className="bg-white p-6 rounded-[2rem] border-4 border-lime-200 shadow-lg mt-8 relative overflow-hidden">
@@ -44,19 +37,39 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
             </h2>
 
             <div className="grid grid-cols-7 gap-2 sm:gap-4">
+                {/* 曜日ヘッダー */}
+                {weekdays.map(w => (
+                    <div key={w} className="text-center font-bold text-sm text-lime-700 py-1 bg-lime-50/50 rounded-lg">
+                        {w}
+                    </div>
+                ))}
+
+                {/* 前月の空セル */}
+                {emptyCells.map((_, index) => (
+                    <div key={`empty-${index}`} className="aspect-square bg-transparent border-2 border-transparent"></div>
+                ))}
+
+                {/* 日付セル */}
                 {days.map(dayStr => {
                     const isEarned = stamps[dayStr];
                     const dayNum = parseInt(dayStr.split('-')[2]);
                     const isToday = dayStr === currentDate;
 
                     return (
-                        <div key={dayStr} className={`aspect-square flex flex-col items-center justify-center rounded-xl border-2 transition-colors duration-300 ${isEarned ? 'bg-lime-200' : 'bg-lime-50'} ${isToday ? 'border-lime-400 ring-2 ring-lime-200' : 'border-lime-100'} relative`}>
-                            <span className="absolute top-1 left-1 text-[10px] font-bold text-lime-400">{dayNum}</span>
+                        <div 
+                            key={dayStr} 
+                            className={`aspect-square flex flex-col items-center justify-center rounded-xl border-2 transition-all duration-300 relative hover:border-lime-300 hover:shadow-sm ${
+                                isEarned ? 'bg-lime-200 border-lime-300' : 'bg-lime-50/50 border-lime-100'
+                            } ${
+                                isToday ? 'border-lime-400 ring-2 ring-lime-200 font-black' : ''
+                            }`}
+                        >
+                            <span className="absolute top-1 left-1.5 text-[10px] font-bold text-lime-600">{dayNum}</span>
 
                             {isEarned ? (
-                                <span className="text-4xl animate-bounce-in animate-jelly drop-shadow-md select-none opacity-100 filter-none">🫛</span>
+                                <span className="text-3xl sm:text-4xl animate-bounce-in animate-jelly drop-shadow-md select-none opacity-100 filter-none">🫛</span>
                             ) : (
-                                <span className="text-3xl opacity-20 filter grayscale select-none">🫛</span>
+                                <span className="text-2xl sm:text-3xl opacity-20 filter grayscale select-none">🫛</span>
                             )}
                         </div>
                     );

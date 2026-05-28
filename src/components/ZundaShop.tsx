@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 // ============================================================
 // 型定義
@@ -188,10 +189,8 @@ const ZundaShop: React.FC<ZundaShopProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'reward' | 'voice'>('reward');
   const [rewardDialog, setRewardDialog] = useState<RewardItem | null>(null);
-  const [customRewards, setCustomRewards] = useState<RewardItem[]>([]);
+  const [rewards, setRewards] = useLocalStorage<RewardItem[]>('focusflow_user_rewards', DEFAULT_REWARDS);
   const [failFlash, setFailFlash] = useState<string | null>(null); // for "not enough coins" flash
-
-  const allRewards = [...DEFAULT_REWARDS, ...customRewards];
 
   const handleRedeem = (item: RewardItem) => {
     const success = onSpendCoins(item.cost);
@@ -225,11 +224,11 @@ const ZundaShop: React.FC<ZundaShopProps> = ({
       label,
       cost,
     };
-    setCustomRewards((prev) => [...prev, newReward]);
+    setRewards((prev) => [...prev, newReward]);
   };
 
   const removeCustomReward = (id: string) => {
-    setCustomRewards((prev) => prev.filter((r) => r.id !== id));
+    setRewards((prev) => prev.filter((r) => r.id !== id));
   };
 
   return (
@@ -296,10 +295,10 @@ const ZundaShop: React.FC<ZundaShopProps> = ({
             <p className="text-xs text-amber-600 font-bold uppercase tracking-wider mb-4">
               🎖️ コインを使ってご褒美と引き換えるのだ！
             </p>
-            {allRewards.map((item) => {
+            {rewards.map((item) => {
               const canAfford = coins >= item.cost;
               const isFlashing = failFlash === item.id;
-              const isCustom = customRewards.some((r) => r.id === item.id);
+              const isCustom = !DEFAULT_REWARDS.some((r) => r.id === item.id);
               return (
                 <div
                   key={item.id}

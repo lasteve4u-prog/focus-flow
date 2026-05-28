@@ -150,3 +150,95 @@ body {
 * {
   font-family: 'Zen Maru Gothic', sans-serif !important;
 }
+
+/* ============================================================
+   ずんだコイン制度 アニメーション
+   ============================================================ */
+
+/* コインが上にフライするアニメーション */
+@keyframes coinFly {
+  0% {
+    transform: translateY(0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-30px) scale(1.3) rotate(180deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-60px) scale(0.8) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+.animate-coin-fly {
+  animation: coinFly 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  display: inline-block;
+}
+
+/* シェイク（コイン不足時の失敗フィードバック） */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-5px); }
+  60%       { transform: translateX(5px); }
+  75%       { transform: translateX(-3px); }
+  90%       { transform: translateX(3px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* パーティクルバースト */
+@keyframes particleBurst {
+  0% {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.5) translateX(0);
+  }
+}
+
+.animate-particle-burst {
+  animation: particleBurst 1s ease-out forwards;
+  position: absolute;
+}
+
+/* 画面フラッシュ（コイン獲得時） */
+@keyframes flashOnce {
+  0%, 100% { opacity: 0; }
+  10%       { opacity: 1; }
+  30%       { opacity: 0.5; }
+  60%       { opacity: 0; }
+}
+
+.animate-flash-once {
+  animation: flashOnce 0.5s ease-out forwards;
+}
+
+/* スローバウンス（コインアイコン） */
+@keyframes bounceSlow {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-8px); }
+}
+
+.animate-bounce-slow {
+  animation: bounceSlow 2s ease-in-out infinite;
+}
+
+/* スライドアップ */
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}

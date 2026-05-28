@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useLocalStorage } from './hooks/useLocalStorage'
 import { useStamps } from './hooks/useStamps'
 import type { DailyLog, Event, Task, Subtask } from './types'
@@ -6,27 +6,75 @@ import { NotificationProvider, useNotification } from './contexts/NotificationCo
 import { HomeScreen } from './components/HomeScreen'
 import { TaskTimer } from './components/TaskTimer'
 import { ForcedChecklist } from './components/ForcedChecklist'
-
-
 import { BreakTimer } from './components/BreakTimer'
+import CoinPopup from './components/CoinPopup'
 import confetti from 'canvas-confetti';
+
+const COIN_PER_SESSION = 100;
 
 type ViewState = 'HOME' | 'TIMER' | 'CHECKLIST' | 'BREAK';
 
+// ローカルのタイムゾーンで YYYY-MM-DD を取得するヘルパー
+const getLocalDateString = (date = new Date()) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 // Separate component to check NotificationContext internals
 function AppContent() {
-  const today = new Date().toISOString().split('T')[0];
-  const [dailyLog, setDailyLog] = useLocalStorage<DailyLog>(today, {
-    date: today,
+  const [currentDate, setCurrentDate] = useState(getLocalDateString());
+  const [dailyLog, setDailyLog] = useLocalStorage<DailyLog>(currentDate, {
+    date: currentDate,
     events: [],
     tasks: []
   });
 
+  // 日付の監視と自動更新
+  useEffect(() => {
+    const checkDate = () => {
+      const todayStr = getLocalDateString();
+      if (todayStr !== currentDate) {
+        setCurrentDate(todayStr);
+      }
+    };
+
+    // 30秒ごとにチェック
+    const intervalId = setInterval(checkDate, 30000);
+
+    // アプリにフォーカスが戻った時にもチェック
+    window.addEventListener('focus', checkDate);
+
+    return () => {
+      clearInterval(intervalId);
+      window.removeEventListener('focus', checkDate);
+    };
+  }, [currentDate]);
+
   const [view, setView] = useState<ViewState>('HOME');
   const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; breakDuration: number; interruptions?: string[]; subtasks?: Subtask[] } | null>(null);
 
+  // ずんだコイン制度の状態
+  const [zundaCoins, setZundaCoins] = useLocalStorage<number>('zundaCoins', 0);
+  const [unlockedVoices, setUnlockedVoices] = useLocalStorage<string[]>('unlockedVoices', ['default']);
+  const [selectedVoice, setSelectedVoice] = useLocalStorage<string>('selectedVoice', 'default');
+  const [showCoinPopup, setShowCoinPopup] = useState(false);
+
   const { unlockAudio, playAlert, stopAlert, isReady } = useNotification();
   const { stamps, addStamp } = useStamps();
+
+  // コインを消費する（成功時true、不足時false）
+  const handleSpendCoins = useCallback((amount: number): boolean => {
+    if (zundaCoins < amount) return false;
+    setZundaCoins(prev => prev - amount);
+    return true;
+  }, [zundaCoins, setZundaCoins]);
+
+  // ボイスをアンロックする
+  const handleUnlockVoice = useCallback((voiceId: string) => {
+    setUnlockedVoices(prev => prev.includes(voiceId) ? prev : [...prev, voiceId]);
+  }, [setUnlockedVoices]);
 
   // Ensure audio context is unlocked on first interaction
   const handleInteraction = async () => {
@@ -89,11 +137,27 @@ function AppContent() {
       taskForStamp = newTask;
     }
 
+    // ずんだコイン付与（チェックリスト完了＝25分集中完了時）
+    setZundaCoins(prev => prev + COIN_PER_SESSION);
+    setShowCoinPopup(true);
+
+    // コイン獲得コンフェッティ
+    confetti({
+      particleCount: 80,
+      spread: 60,
+      origin: { y: 0.5 },
+      colors: ['#fde047', '#f59e0b', '#fbbf24', '#ffffff'],
+      scalar: 1.0
+    });
+
     setView('BREAK');
 
     // Ensure strict single playback
     stopAlert();
-    playAlert('break-start');
+
+    // 選択されたボイスでタイマー終了音を再生
+    const voiceType = selectedVoice === 'default' ? 'break-start' : selectedVoice as any;
+    playAlert(voiceType);
 
     // Stamp Logic
     if (taskForStamp) {
@@ -148,6 +212,13 @@ function AppContent() {
 
   return (
     <div onClick={handleInteraction} className={`min-h-screen w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-1000 ease-in-out ${view === 'TIMER' ? 'bg-[#ecfccb]' : 'bg-lime-50'}`}>
+      {/* コインゲットポップアップ（全画面オーバーレイ） */}
+      <CoinPopup
+        visible={showCoinPopup}
+        amount={COIN_PER_SESSION}
+        onComplete={() => setShowCoinPopup(false)}
+      />
+
       <div className="w-full max-w-2xl px-4 flex flex-col items-center gap-6 relative">
         {view === 'HOME' && (
           <HomeScreen
@@ -159,6 +230,12 @@ function AppContent() {
             onDeleteTask={handleDeleteTask}
             isAudioReady={isReady}
             stamps={stamps}
+            zundaCoins={zundaCoins}
+            unlockedVoices={unlockedVoices}
+            selectedVoice={selectedVoice}
+            onSpendCoins={handleSpendCoins}
+            onUnlockVoice={handleUnlockVoice}
+            onSelectVoice={setSelectedVoice}
           />
         )}
 

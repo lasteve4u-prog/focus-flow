@@ -3,9 +3,8 @@ import type { DailyLog, Event, Subtask } from '../types';
 import { exportToMarkdown } from '../utils/exporter';
 
 import { StampCard } from './StampCard';
-// TaskBreakdownModal is now used inside SettingModal
-// import { TaskBreakdownModal } from './TaskBreakdownModal'; 
 import { SettingModal } from './SettingModal';
+import ZundaShop from './ZundaShop';
 
 interface HomeScreenProps {
     dailyLog: DailyLog;
@@ -16,9 +15,16 @@ interface HomeScreenProps {
     onDeleteTask: (taskId: string) => void;
     isAudioReady: boolean;
     stamps: Record<string, boolean>;
+    // ずんだコイン制度
+    zundaCoins: number;
+    unlockedVoices: string[];
+    selectedVoice: string;
+    onSpendCoins: (amount: number) => boolean;
+    onUnlockVoice: (voiceId: string) => void;
+    onSelectVoice: (voiceId: string) => void;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
@@ -255,6 +261,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 )}
 
                 <StampCard stamps={stamps} currentDate={dailyLog.date} />
+
+                {/* ずんだ銀行 & ショップ */}
+                <ZundaShop
+                    coins={zundaCoins}
+                    unlockedVoices={unlockedVoices}
+                    selectedVoice={selectedVoice}
+                    onSpendCoins={onSpendCoins}
+                    onUnlockVoice={onUnlockVoice}
+                    onSelectVoice={onSelectVoice}
+                />
 
                 <div className="flex justify-center mt-12 mb-8">
                     <button

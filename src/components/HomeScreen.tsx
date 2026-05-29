@@ -74,16 +74,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
 
     return (
         <div className="w-full">
-            <div className="w-full space-y-8 mt-4 md:mt-8">
-                <header className="flex flex-col items-center justify-center mb-12 mt-6 gap-4 animate-fade-in">
-                    <div className="flex items-center gap-4 sm:gap-6">
-                        <span className="text-6xl sm:text-7xl animate-bounce select-none">🫛</span>
-                        <h1 className="text-6xl sm:text-7xl font-extrabold text-lime-600 tracking-widest drop-shadow-md select-none">
+           <div className="w-full space-y-4 mt-2 md:mt-4">
+           <header className="flex flex-row items-center justify-center mb-2 mt-2 gap-6 animate-fade-in">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                        <span className="text-4xl sm:text-5xl animate-bounce select-none">🫛</span>
+                        <h1 className="text-4xl sm:text-5xl font-extrabold text-lime-600 tracking-widest drop-shadow-md select-none">
                             FocusFlow
                         </h1>
                     </div>
-                    <div className="bg-lime-100/50 px-8 py-3 rounded-full border border-lime-200">
-                        <p className="text-lime-700 text-4xl font-bold tracking-wider">
+                    <div className="bg-lime-100/50 px-5 py-1.5 rounded-full border border-lime-200">
+                        <p className="text-lime-700 text-xl font-bold tracking-wider">
                             {`${dailyLog.date} (${getWeekdayStr(dailyLog.date)})`}
                         </p>
                     </div>

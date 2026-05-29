@@ -7,12 +7,14 @@ import { HomeScreen } from './components/HomeScreen'
 import { TaskTimer } from './components/TaskTimer'
 import { ForcedChecklist } from './components/ForcedChecklist'
 import { BreakTimer } from './components/BreakTimer'
+import { SummerFatigueTimer } from './components/SummerFatigueTimer'
 import CoinPopup from './components/CoinPopup'
 import confetti from 'canvas-confetti';
+import { MAX_ZUNDA_POWER, SUMMER_FATIGUE_DURATION_MS } from './constants/zundaPower';
 
 const COIN_PER_SESSION = 100;
 
-type ViewState = 'HOME' | 'TIMER' | 'CHECKLIST' | 'BREAK';
+type ViewState = 'HOME' | 'TIMER' | 'CHECKLIST' | 'BREAK' | 'SUMMER_FATIGUE';
 
 // ローカルのタイムゾーンで YYYY-MM-DD を取得するヘルパー
 const getLocalDateString = (date = new Date()) => {
@@ -61,6 +63,13 @@ function AppContent() {
   const [selectedVoice, setSelectedVoice] = useLocalStorage<string>('selectedVoice', 'default');
   const [showCoinPopup, setShowCoinPopup] = useState(false);
 
+  // ずんだパワー（過集中防止スタミナ）
+  const [zundaPower, setZundaPower] = useLocalStorage<number>('zundaPower', MAX_ZUNDA_POWER);
+  const [summerFatigueEndAt, setSummerFatigueEndAt] = useLocalStorage<number | null>('summerFatigueEndAt', null);
+
+  const isSummerFatigueActive =
+    summerFatigueEndAt !== null && Date.now() < summerFatigueEndAt;
+
   const { unlockAudio, playAlert, stopAlert, isReady } = useNotification();
   const { stamps, addStamp } = useStamps();
 
@@ -75,6 +84,32 @@ function AppContent() {
   const handleUnlockVoice = useCallback((voiceId: string) => {
     setUnlockedVoices(prev => prev.includes(voiceId) ? prev : [...prev, voiceId]);
   }, [setUnlockedVoices]);
+
+  const recoverFromSummerFatigue = useCallback(() => {
+    setZundaPower(MAX_ZUNDA_POWER);
+    setSummerFatigueEndAt(null);
+    setCurrentTask(null);
+    setView('HOME');
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.5 },
+      colors: ['#fb923c', '#fbbf24', '#84cc16', '#ffffff'],
+    });
+  }, [setZundaPower, setSummerFatigueEndAt]);
+
+  // 夏バテ状態の復元（リロード・日跨ぎ対応）
+  useEffect(() => {
+    if (summerFatigueEndAt === null) return;
+
+    if (Date.now() >= summerFatigueEndAt) {
+      recoverFromSummerFatigue();
+      return;
+    }
+
+    setView('SUMMER_FATIGUE');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Ensure audio context is unlocked on first interaction
   const handleInteraction = async () => {
@@ -92,6 +127,8 @@ function AppContent() {
   };
 
   const startTask = async (title: string, duration: number, breakDuration: number, subtasks?: Subtask[]) => {
+    if (isSummerFatigueActive) return;
+
     // Explicitly unlock audio on start to ensure context is ready
     await unlockAudio();
 
@@ -150,14 +187,26 @@ function AppContent() {
       scalar: 1.0
     });
 
-    setView('BREAK');
+    // ずんだパワーを消費（集中セッション完了時）
+    const newPower = Math.max(0, zundaPower - 1);
+    setZundaPower(newPower);
 
-    // Ensure strict single playback
-    stopAlert();
+    if (newPower <= 0) {
+      const endAt = Date.now() + SUMMER_FATIGUE_DURATION_MS;
+      setSummerFatigueEndAt(endAt);
+      setView('SUMMER_FATIGUE');
+      stopAlert();
+      playAlert('break-start');
+    } else {
+      setView('BREAK');
 
-    // 選択されたボイスでタイマー終了音を再生
-    const voiceType = selectedVoice === 'default' ? 'break-start' : selectedVoice as any;
-    playAlert(voiceType);
+      // Ensure strict single playback
+      stopAlert();
+
+      // 選択されたボイスでタイマー終了音を再生
+      const voiceType = selectedVoice === 'default' ? 'break-start' : selectedVoice as any;
+      playAlert(voiceType);
+    }
 
     // Stamp Logic
     if (taskForStamp) {
@@ -211,7 +260,7 @@ function AppContent() {
   };
 
   return (
-    <div onClick={handleInteraction} className={`min-h-screen w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-1000 ease-in-out ${view === 'TIMER' ? 'bg-[#ecfccb]' : 'bg-lime-50'}`}>
+    <div onClick={handleInteraction} className={`min-h-screen w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-1000 ease-in-out ${view === 'TIMER' ? 'bg-[#ecfccb]' : view === 'SUMMER_FATIGUE' ? 'bg-orange-50' : 'bg-lime-50'}`}>
       {/* コインゲットポップアップ（全画面オーバーレイ） */}
       <CoinPopup
         visible={showCoinPopup}
@@ -236,6 +285,8 @@ function AppContent() {
             onSpendCoins={handleSpendCoins}
             onUnlockVoice={handleUnlockVoice}
             onSelectVoice={setSelectedVoice}
+            zundaPower={zundaPower}
+            isStartLocked={isSummerFatigueActive}
           />
         )}
 
@@ -244,6 +295,7 @@ function AppContent() {
             durationMinutes={currentTask?.duration}
             taskTitle={currentTask?.title}
             subtasks={currentTask?.subtasks}
+            zundaPower={zundaPower}
             onStop={stopTask}
           />
         )}
@@ -254,6 +306,13 @@ function AppContent() {
 
         {view === 'BREAK' && currentTask && (
           <BreakTimer onFinish={finishBreak} durationMinutes={currentTask.breakDuration} />
+        )}
+
+        {view === 'SUMMER_FATIGUE' && summerFatigueEndAt && (
+          <SummerFatigueTimer
+            endAt={summerFatigueEndAt}
+            onRecover={recoverFromSummerFatigue}
+          />
         )}
 
       </div>

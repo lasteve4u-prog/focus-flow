@@ -3,14 +3,17 @@ import { useNotification, type AlertType } from '../contexts/NotificationContext
 import { NotificationModal } from './NotificationModal';
 import confetti from 'canvas-confetti';
 import type { Subtask } from '../types';
+import { ZundaPowerDisplay } from './ZundaPowerDisplay';
+
 interface TaskTimerProps {
     durationMinutes: number;
     taskTitle: string;
     subtasks?: Subtask[];
+    zundaPower: number;
     onStop: (interruptions: string[], finalSubtasks: Subtask[]) => void;
 }
 
-export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle, subtasks: initialSubtasks, onStop }) => {
+export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle, subtasks: initialSubtasks, zundaPower, onStop }) => {
     const [timeLeft, setTimeLeft] = useState(durationMinutes * 60);
     const [endTime, setEndTime] = useState<number | null>(null);
     const [isAlertOpen, setIsAlertOpen] = useState(false);
@@ -260,14 +263,13 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                     </div>
                 </div>
 
+                <div className="mb-4">
+                    <ZundaPowerDisplay power={zundaPower} size="md" />
+                </div>
+
                 <div className="relative mb-12">
                     {/* Glow effect */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-lime-400/20 blur-3xl rounded-full pointer-events-none animate-pulse"></div>
-
-                    {/* Zundamon/Bean Icon Animated */}
-                    <div className="absolute -top-24 left-1/2 -translate-x-1/2 text-6xl animate-yura-yura drop-shadow-md">
-                        🫛
-                    </div>
 
                     <div className="text-[9rem] md:text-[11rem] leading-none font-black tracking-[0.2rem] text-lime-600 drop-shadow-xl tabular-nums transition-all duration-300 font-mono">
                         {formatTime(timeLeft)}

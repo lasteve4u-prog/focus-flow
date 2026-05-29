@@ -8,13 +8,15 @@ interface SettingModalProps {
     initialBreakDuration: number; // minutes
     onStart: (focusDuration: number, breakDuration: number, title: string, subtasks: Subtask[]) => Promise<void>;
     isAudioReady: boolean;
+    isStartLocked?: boolean;
 }
 
 export const SettingModal: React.FC<SettingModalProps> = ({
     initialFocusDuration,
     initialBreakDuration,
     onStart,
-    isAudioReady
+    isAudioReady,
+    isStartLocked = false,
 }) => {
     // State for picker value (controlled component)
     const [pickerValue, setPickerValue] = useState({
@@ -37,7 +39,7 @@ export const SettingModal: React.FC<SettingModalProps> = ({
         const focus = Number(pickerValue.focus);
         const breakTime = Number(pickerValue.break);
 
-        if (focus > 0 && isAudioReady && !isStarting) {
+        if (focus > 0 && isAudioReady && !isStarting && !isStartLocked) {
             setIsStarting(true);
             try {
                 await onStart(
@@ -125,16 +127,28 @@ export const SettingModal: React.FC<SettingModalProps> = ({
                     </div>
                 </div>
 
+                {isStartLocked && (
+                    <p className="text-center text-orange-700 font-bold text-sm bg-orange-100 border-2 border-orange-200 rounded-2xl px-4 py-3">
+                        🍉 夏バテ回復中…集中はまだ始められないのだ
+                    </p>
+                )}
+
                 <button
                     type="submit"
-                    disabled={!isAudioReady || isStarting}
+                    disabled={!isAudioReady || isStarting || isStartLocked}
                     className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
-                            ${(!isAudioReady || isStarting)
-                            ? 'bg-gray-400 cursor-not-allowed shadow-none'
+                            ${(!isAudioReady || isStarting || isStartLocked)
+                            ? 'bg-gray-400 cursor-not-allowed shadow-none opacity-60'
                             : 'bg-green-700 hover:bg-green-800'
                         }`}
                 >
-                    {isStarting ? '起動中...' : (!isAudioReady ? '準備中なのだ...' : 'この設定で始めるのだ！')}
+                    {isStartLocked
+                        ? '夏バテで動けないのだ…'
+                        : isStarting
+                            ? '起動中...'
+                            : !isAudioReady
+                                ? '準備中なのだ...'
+                                : 'この設定で始めるのだ！'}
                 </button>
 
             </form>

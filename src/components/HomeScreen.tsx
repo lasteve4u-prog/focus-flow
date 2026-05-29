@@ -4,6 +4,7 @@ import { exportToMarkdown } from '../utils/exporter';
 
 import { StampCard } from './StampCard';
 import { SettingModal } from './SettingModal';
+import { ZundaPowerDisplay } from './ZundaPowerDisplay';
 import ZundaShop from './ZundaShop';
 
 const getWeekdayStr = (dateStr: string) => {
@@ -29,9 +30,11 @@ interface HomeScreenProps {
     onSpendCoins: (amount: number) => boolean;
     onUnlockVoice: (voiceId: string) => void;
     onSelectVoice: (voiceId: string) => void;
+    zundaPower: number;
+    isStartLocked: boolean;
 }
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice, zundaPower, isStartLocked }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
@@ -75,18 +78,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     return (
         <div className="w-full">
            <div className="w-full space-y-4 mt-2 md:mt-4">
-           <header className="flex flex-row items-center justify-center mb-2 mt-2 gap-6 animate-fade-in">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <span className="text-4xl sm:text-5xl animate-bounce select-none">🫛</span>
-                        <h1 className="text-4xl sm:text-5xl font-extrabold text-lime-600 tracking-widest drop-shadow-md select-none">
-                            FocusFlow
-                        </h1>
+           <header className="flex flex-col items-center mb-2 mt-2 gap-4 animate-fade-in">
+                    <div className="flex flex-row items-center justify-center gap-6 flex-wrap">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                            <span className="text-4xl sm:text-5xl animate-bounce select-none">🫛</span>
+                            <h1 className="text-4xl sm:text-5xl font-extrabold text-lime-600 tracking-widest drop-shadow-md select-none">
+                                FocusFlow
+                            </h1>
+                        </div>
+                        <div className="bg-lime-100/50 px-5 py-1.5 rounded-full border border-lime-200">
+                            <p className="text-lime-700 text-xl font-bold tracking-wider">
+                                {`${dailyLog.date} (${getWeekdayStr(dailyLog.date)})`}
+                            </p>
+                        </div>
                     </div>
-                    <div className="bg-lime-100/50 px-5 py-1.5 rounded-full border border-lime-200">
-                        <p className="text-lime-700 text-xl font-bold tracking-wider">
-                            {`${dailyLog.date} (${getWeekdayStr(dailyLog.date)})`}
-                        </p>
-                    </div>
+                    <ZundaPowerDisplay power={zundaPower} size="lg" />
                 </header>
 
                 {/* Task Starter Section (Refactored to SettingModal) */}
@@ -97,6 +103,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                         await onStartTask(title, focusDuration, breakDuration, subtasks);
                     }}
                     isAudioReady={isAudioReady}
+                    isStartLocked={isStartLocked}
                 />
 
                 {/* Schedule / Events */}

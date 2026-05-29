@@ -274,12 +274,12 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                     </div>
                 </div>
 
-                <div className="flex gap-4">
+                <div className="flex justify-center gap-3 w-full px-4 mt-6">
                     <button
                         onClick={handleStop}
-                        className="group relative inline-flex items-center justify-center px-10 py-5 font-black text-white text-xl rounded-full bg-red-400 hover:bg-red-500 border-4 border-white/30 btn-puni"
+                        className="flex-1 group relative inline-flex items-center justify-center py-4 font-black text-white text-base rounded-full bg-red-400 hover:bg-red-500 border-4 border-white/30 btn-puni whitespace-nowrap"
                     >
-                        <span className="mr-3 animate-pulse text-2xl">⏹</span> 中断するのだ！
+                        <span className="mr-1 animate-pulse text-xl">⏹</span> 中断するのだ！
                     </button>
 
                     <button
@@ -290,10 +290,10 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                                 alert("メモしたのだ！集中に戻るのだ！😤");
                             }
                         }}
-                        className="group relative inline-flex items-center justify-center px-6 py-5 font-black text-lime-600 text-lg rounded-full bg-white hover:bg-lime-50 border-4 border-lime-200 btn-puni"
+                        className="flex-1 group relative inline-flex items-center justify-center py-4 font-black text-lime-600 text-base rounded-full bg-white hover:bg-lime-50 border-4 border-lime-200 btn-puni whitespace-nowrap"
                         title="あとでやる (Memo)"
                     >
-                        <span className="text-2xl">⚡️</span> あとで！
+                        <span className="mr-1 text-xl">⚡️</span> あとで！
                     </button>
                 </div>
 

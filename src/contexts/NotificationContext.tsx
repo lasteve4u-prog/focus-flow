@@ -34,12 +34,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
     // Initialize AudioContext and load sounds
     useEffect(() => {
-        const initAudio = async () => {
-            try {
-                const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-                audioContextRef.current = new AudioContextClass();
-
-                const sounds: Record<string, string> = {
+const sounds: Record<string, string> = {
                     'default': '/sounds/alert.mp3',
                     '1min': '/sounds/1min.mp3',
                     '5min': '/sounds/5min.mp3',
@@ -52,8 +47,10 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                     'praise-1': '/sounds/praise_1.mp3',
                     'praise-2': '/sounds/praise_2.mp3',
                     'start': '/sounds/start.mp3',
+                    // ✨ ここに、ショップで選べるボーナスボイスの【ID】と【パス】を自力で追記するのだ！
+                    'bonus-1': '/sounds/zunda_bonus_1.wav',
+                    'bonus-2': '/sounds/zunda_bonus_2.wav',
                 };
-
                 const loadPromises = Object.entries(sounds).map(async ([key, path]) => {
                     try {
                         const response = await fetch(path);

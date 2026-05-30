@@ -34,19 +34,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
 // Initialize AudioContext and load sounds
     useEffect(() => {
-        // 🟢 消え去っていた「画面タップ待ちの門番（handleEx）」をここに完全復活させるのだ！
         const handleEx = () => {
             if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
                 audioContextRef.current.resume();
             }
         };
 
-        // 🟢 門番をブラウザに登録するのだ！
         window.addEventListener('click', handleEx);
         window.addEventListener('touchstart', handleEx);
 
         const initAudio = async () => {
             try {
+                // 🟢 【究極の安全装置】もし本体が消えていたら、ここで自動的に大復活させるのだ！
+                if (!audioContextRef.current) {
+                    audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+                }
+
                 const sounds: Record<string, string> = {
                     'default': '/sounds/alert.mp3',
                     '1min': '/sounds/1min.mp3',
@@ -93,7 +96,6 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
 
         initAudio();
 
-        // 🟢 画面が閉じるときにお片付けする処理なのだ！
         return () => {
             window.removeEventListener('click', handleEx);
             window.removeEventListener('touchstart', handleEx);
@@ -101,7 +103,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 audioContextRef.current.close();
             }
         };
-    }, []);    
+    }, []);
     const unlockAudio = async () => {
         if (!audioContextRef.current) return;
 

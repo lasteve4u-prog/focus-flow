@@ -32,9 +32,22 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
     const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
     const timeoutRef = useRef<number | null>(null);
 
-    // Initialize AudioContext and load sounds
+// Initialize AudioContext and load sounds
     useEffect(() => {
-const sounds: Record<string, string> = {
+        // 🟢 消え去っていた「画面タップ待ちの門番（handleEx）」をここに完全復活させるのだ！
+        const handleEx = () => {
+            if (audioContextRef.current && audioContextRef.current.state === 'suspended') {
+                audioContextRef.current.resume();
+            }
+        };
+
+        // 🟢 門番をブラウザに登録するのだ！
+        window.addEventListener('click', handleEx);
+        window.addEventListener('touchstart', handleEx);
+
+        const initAudio = async () => {
+            try {
+                const sounds: Record<string, string> = {
                     'default': '/sounds/alert.mp3',
                     '1min': '/sounds/1min.mp3',
                     '5min': '/sounds/5min.mp3',
@@ -47,17 +60,16 @@ const sounds: Record<string, string> = {
                     'praise-1': '/sounds/praise_1.mp3',
                     'praise-2': '/sounds/praise_2.mp3',
                     'start': '/sounds/start.mp3',
-                    // ✨ ここに、ショップで選べるボーナスボイスの【ID】と【パス】を自力で追記するのだ！
                     'bonus-1': '/sounds/zunda_bonus_1.wav',
                     'bonus-2': '/sounds/zunda_bonus_2.wav',
-                    // 🟢 新旧どっちのIDがLocalStorageから読まれても、同じ新しいファイルを流すのだ！
-                    'voice_b': '/sounds/zunda_bonus_1.wav', // 古いID用（保険）
-                    'voice-b': '/sounds/zunda_bonus_1.wav', // ハイフン版の保険
-                    'zunda_bonus_1': '/sounds/zunda_bonus_1.wav', // 新しいID用
-                    'voice_c': '/sounds/zunda_bonus_2.wav', // 古いID用（保険）
-                    'voice-c': '/sounds/zunda_bonus_2.wav', // ハイフン版の保険
-                    'zunda_bonus_2': '/sounds/zunda_bonus_2.wav', // 新しいID用
+                    'voice_b': '/sounds/zunda_bonus_1.wav',
+                    'voice-b': '/sounds/zunda_bonus_1.wav',
+                    'zunda_bonus_1': '/sounds/zunda_bonus_1.wav',
+                    'voice_c': '/sounds/zunda_bonus_2.wav',
+                    'voice-c': '/sounds/zunda_bonus_2.wav',
+                    'zunda_bonus_2': '/sounds/zunda_bonus_2.wav'
                 };
+
                 const loadPromises = Object.entries(sounds).map(async ([key, path]) => {
                     try {
                         const response = await fetch(path);
@@ -75,20 +87,13 @@ const sounds: Record<string, string> = {
                 setIsReady(true);
                 console.log('Audio system initialized and all sounds loaded');
             } catch (error) {
-                console.error('Failed to initialize audio:', error);
+                console.error('Failed to initialize audio system:', error);
             }
         };
 
-        const handleEx = () => {
-            if (audioContextRef.current?.state === 'suspended') {
-                audioContextRef.current.resume();
-            }
-        }
-        window.addEventListener('click', handleEx, { once: true });
-        window.addEventListener('touchstart', handleEx, { once: true });
-
         initAudio();
 
+        // 🟢 画面が閉じるときにお片付けする処理なのだ！
         return () => {
             window.removeEventListener('click', handleEx);
             window.removeEventListener('touchstart', handleEx);
@@ -96,8 +101,7 @@ const sounds: Record<string, string> = {
                 audioContextRef.current.close();
             }
         };
-    }, []);
-
+    }, []);    
     const unlockAudio = async () => {
         if (!audioContextRef.current) return;
 

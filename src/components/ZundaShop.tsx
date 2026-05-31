@@ -57,6 +57,13 @@ export const VOICE_SHOP_ITEMS: VoiceItem[] = [
     cost: 1000,
     audioPath: '/audio/voice_c.wav',
   },
+  {
+    id: 'voice_d',
+    label: 'ボイスD「きみは本当にすごいのだ！！ぼくが応援しているのだ！！」',
+    description: '全力応援バージョンなのだ💪',
+    cost: 1500,
+    audioPath: '/sounds/zunda_bonus_3.wav',
+  },
 ];
 
 // ============================================================

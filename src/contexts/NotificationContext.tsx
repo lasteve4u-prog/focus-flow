@@ -65,12 +65,16 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                     'start': '/sounds/start.mp3',
                     'bonus-1': '/sounds/zunda_bonus_1.wav',
                     'bonus-2': '/sounds/zunda_bonus_2.wav',
+                    'bonus-3': '/sounds/zunda_bonus_3.wav',
                     'voice_b': '/sounds/zunda_bonus_1.wav',
                     'voice-b': '/sounds/zunda_bonus_1.wav',
                     'zunda_bonus_1': '/sounds/zunda_bonus_1.wav',
                     'voice_c': '/sounds/zunda_bonus_2.wav',
                     'voice-c': '/sounds/zunda_bonus_2.wav',
-                    'zunda_bonus_2': '/sounds/zunda_bonus_2.wav'
+                    'zunda_bonus_2': '/sounds/zunda_bonus_2.wav',
+                    'voice_d': '/sounds/zunda_bonus_3.wav',
+                    'voice-d': '/sounds/zunda_bonus_3.wav',
+                    'zunda_bonus_3': '/sounds/zunda_bonus_3.wav'
                 };
 
                 const loadPromises = Object.entries(sounds).map(async ([key, path]) => {

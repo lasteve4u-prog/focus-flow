@@ -30,7 +30,7 @@ export const SettingModal: React.FC<SettingModalProps> = ({
     const [isStarting, setIsStarting] = useState(false);
 
     // Generate options
-    const focusOptions = Array.from({ length: 24 }, (_, i) => (i + 1) * 5);
+    const focusOptions = [3, ...Array.from({ length: 24 }, (_, i) => (i + 1) * 5)];
     const breakOptions = Array.from({ length: 30 }, (_, i) => i + 1);
 
     const handleStartTask = async (e: React.FormEvent) => {

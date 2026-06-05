@@ -34,11 +34,19 @@ interface HomeScreenProps {
     isStartLocked: boolean;
 }
 
+const calcEventDuration = (startTime: string, endTime: string): number => {
+    const [sh, sm] = startTime.split(':').map(Number);
+    const [eh, em] = endTime.split(':').map(Number);
+    const diff = (eh * 60 + em) - (sh * 60 + sm);
+    return diff > 0 ? diff : 25;
+};
+
 export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice, zundaPower, isStartLocked }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [startTime, setStartTime] = useState('09:00');
     const [endTime, setEndTime] = useState('10:00');
     const [editingId, setEditingId] = useState<string | null>(null);
+    const [convertingEvent, setConvertingEvent] = useState<Event | null>(null);
 
     const handleSubmitEvent = (e: React.FormEvent) => {
         e.preventDefault();
@@ -76,6 +84,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
     };
 
     return (
+        <>
         <div className="w-full">
            <div className="w-full space-y-4 mt-2 md:mt-4">
            <header className="flex flex-col items-center mb-2 mt-2 gap-4 animate-fade-in">
@@ -124,6 +133,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                     <span className="font-bold text-green-800 text-lg truncate flex-1">{event.title}</span>
                                 </div>
                                 <div className="flex gap-2 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button
+                                        onClick={() => setConvertingEvent(event)}
+                                        className="p-3 text-green-600 hover:bg-green-50 rounded-full transition-colors active:scale-95"
+                                        title="タスクとして開始"
+                                    >
+                                        ▶️
+                                    </button>
                                     <button
                                         onClick={() => handleEditClick(event)}
                                         className="p-3 text-lime-600 hover:bg-lime-100 rounded-full transition-colors active:scale-95"
@@ -296,5 +312,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 </div>
             </div>
         </div >
+
+        {/* Event → Task 変換モーダル */}
+        {convertingEvent && (
+            <div
+                className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                onClick={() => setConvertingEvent(null)}
+            >
+                <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+                    <div className="mb-3 flex items-center justify-between px-2">
+                        <p className="text-white font-bold text-sm opacity-80">
+                            📅 {convertingEvent.startTime} - {convertingEvent.endTime}
+                        </p>
+                        <button
+                            onClick={() => setConvertingEvent(null)}
+                            className="text-white opacity-60 hover:opacity-100 text-xl font-bold"
+                        >✕</button>
+                    </div>
+                    <SettingModal
+                        key={convertingEvent.id}
+                        initialTitle={convertingEvent.title}
+                        initialFocusDuration={calcEventDuration(convertingEvent.startTime, convertingEvent.endTime)}
+                        initialBreakDuration={5}
+                        onStart={async (focusDuration, breakDuration, title, subtasks) => {
+                            await onStartTask(title, focusDuration, breakDuration, subtasks);
+                            setConvertingEvent(null);
+                        }}
+                        isAudioReady={isAudioReady}
+                        isStartLocked={isStartLocked}
+                    />
+                </div>
+            </div>
+        )}
+        </>
     );
 };

@@ -6,6 +6,7 @@ import { TaskBreakdownModal } from './TaskBreakdownModal';
 interface SettingModalProps {
     initialFocusDuration: number; // minutes
     initialBreakDuration: number; // minutes
+    initialTitle?: string;
     onStart: (focusDuration: number, breakDuration: number, title: string, subtasks: Subtask[]) => Promise<void>;
     isAudioReady: boolean;
     isStartLocked?: boolean;
@@ -14,6 +15,7 @@ interface SettingModalProps {
 export const SettingModal: React.FC<SettingModalProps> = ({
     initialFocusDuration,
     initialBreakDuration,
+    initialTitle,
     onStart,
     isAudioReady,
     isStartLocked = false,
@@ -24,7 +26,7 @@ export const SettingModal: React.FC<SettingModalProps> = ({
         break: initialBreakDuration
     });
 
-    const [sessionTitle, setSessionTitle] = useState('');
+    const [sessionTitle, setSessionTitle] = useState(initialTitle ?? '');
     const [isBreakdownModalOpen, setIsBreakdownModalOpen] = useState(false);
     const [pendingSubtasks, setPendingSubtasks] = useState<Subtask[]>([]);
     const [isStarting, setIsStarting] = useState(false);

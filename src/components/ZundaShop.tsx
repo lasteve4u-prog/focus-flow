@@ -64,6 +64,13 @@ export const VOICE_SHOP_ITEMS: VoiceItem[] = [
     cost: 1500,
     audioPath: '/sounds/zunda_bonus_3.wav',
   },
+  {
+    id: 'voice_e',
+    label: 'ボイスE「うおおおお！お前は神か！？天才の化身なのだ！今、歴史が動いたのだーーー！！！」',
+    description: '神降臨バージョンなのだ⚡👑',
+    cost: 500,
+    audioPath: '/sounds/zunda_bonus_4.wav',
+  },
 ];
 
 // ============================================================

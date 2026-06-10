@@ -71,6 +71,13 @@ export const VOICE_SHOP_ITEMS: VoiceItem[] = [
     cost: 500,
     audioPath: '/sounds/zunda_bonus_4.wav',
   },
+  {
+    id: 'voice_f',
+    label: 'ボイスF「ピロリロリローーーン！確変突入なのだ！今のあなたは無敵モード！何をやっても大成功のボーナスタイムなのだー！」',
+    description: '確変ボーナスタイムバージョンなのだ🎰✨',
+    cost: 1000,
+    audioPath: '/sounds/zunda_bonus_5.wav',
+  },
 ];
 
 // ============================================================

@@ -162,7 +162,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
     };
 
     return (
-        <div className="flex flex-col items-center justify-center flex-1 w-full bg-lime-100 text-green-900 p-8 rounded-[2rem] shadow-2xl animate-fade-in border-4 border-lime-300">
+        <div className="flex flex-col items-center justify-center flex-1 w-full bg-gradient-to-b from-lime-50 via-lime-100 to-emerald-100 text-green-900 p-8 rounded-[2rem] shadow-2xl animate-fade-in border-4 border-lime-300">
             <div className="w-full max-w-2xl flex flex-col items-center">
                 <div className="mb-4 text-center text-lime-800">
                     <p className="uppercase tracking-[0.2em] text-sm font-black mb-3 text-lime-600 bg-lime-200 inline-block px-4 py-1 rounded-full">現在のタスクなのだ</p>
@@ -212,7 +212,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                                     </button>
                                     <button
                                         onClick={handleNextSubtask}
-                                        className="flex-1 px-6 py-4 rounded-2xl font-black text-white bg-lime-500 hover:bg-lime-600 shadow-[0_4px_0_rgb(65,130,20)] active:translate-y-1 active:shadow-none transition-all text-xl"
+                                        className="flex-1 px-6 py-4 rounded-2xl font-black text-white bg-gradient-to-r from-lime-500 to-green-500 hover:from-lime-600 hover:to-green-600 shadow-[0_4px_0_rgb(65,130,20)] active:translate-y-1 active:shadow-none transition-all text-xl"
                                     >
                                         完了！次へ 👉
                                     </button>
@@ -255,8 +255,8 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                     {/* Visual Progress Bar */}
                     <div className="w-full h-6 bg-lime-200/50 rounded-full overflow-hidden border-2 border-lime-300 shadow-inner relative">
                         <div
-                            className={`h-full transition-all duration-1000 ease-linear ${(timeLeft / (durationMinutes * 60)) < 0.2 ? 'bg-red-400' :
-                                (timeLeft / (durationMinutes * 60)) < 0.5 ? 'bg-yellow-400' : 'bg-lime-500'
+                            className={`h-full transition-all duration-1000 ease-linear ${(timeLeft / (durationMinutes * 60)) < 0.2 ? 'bg-gradient-to-r from-red-400 to-rose-500' :
+                                (timeLeft / (durationMinutes * 60)) < 0.5 ? 'bg-gradient-to-r from-yellow-300 to-amber-400' : 'bg-gradient-to-r from-lime-400 to-green-500'
                                 }`}
                             style={{ width: `${(timeLeft / (durationMinutes * 60)) * 100}%` }}
                         />
@@ -271,7 +271,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                     {/* Glow effect */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-lime-400/20 blur-3xl rounded-full pointer-events-none animate-pulse"></div>
 
-                    <div className="text-[9rem] md:text-[11rem] leading-none font-black tracking-[0.2rem] text-lime-600 drop-shadow-xl tabular-nums transition-all duration-300 font-mono">
+                    <div className="text-[9rem] md:text-[11rem] leading-none font-black tracking-[0.2rem] bg-gradient-to-b from-lime-400 via-lime-500 to-green-600 bg-clip-text text-transparent drop-shadow-xl tabular-nums transition-all duration-300 font-mono">
                         {formatTime(timeLeft)}
                     </div>
                 </div>
@@ -279,7 +279,7 @@ export const TaskTimer: React.FC<TaskTimerProps> = ({ durationMinutes, taskTitle
                 <div className="flex justify-center gap-3 w-full px-4 mt-6">
                     <button
                         onClick={handleStop}
-                        className="flex-1 group relative inline-flex items-center justify-center py-4 font-black text-white text-base rounded-full bg-red-400 hover:bg-red-500 border-4 border-white/30 btn-puni whitespace-nowrap"
+                        className="flex-1 group relative inline-flex items-center justify-center py-4 font-black text-white text-base rounded-full bg-gradient-to-r from-red-400 to-rose-500 hover:from-red-500 hover:to-rose-600 border-4 border-white/30 btn-puni whitespace-nowrap"
                     >
                         <span className="mr-1 animate-pulse text-xl">⏹</span> 中断するのだ！
                     </button>

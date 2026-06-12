@@ -29,7 +29,7 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
     const emptyCells = Array.from({ length: firstDayOfWeek });
 
     return (
-        <section className="bg-white p-6 rounded-[2rem] border-4 border-lime-200 shadow-lg mt-8 relative overflow-hidden">
+        <section className="bg-gradient-to-br from-white via-lime-50/50 to-pink-50/40 p-6 rounded-[2rem] border-4 border-lime-200 shadow-lg mt-8 relative overflow-hidden">
             <h2 className="text-2xl font-black text-green-800 mb-6 flex items-center justify-center gap-3">
                 <span className="text-3xl">💮</span>
                 <span>{titleDate} のスタンプ帳なのだ</span>
@@ -59,7 +59,7 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
                         <div 
                             key={dayStr} 
                             className={`aspect-square flex flex-col items-center justify-center rounded-xl border-2 transition-all duration-300 relative hover:border-lime-300 hover:shadow-sm ${
-                                isEarned ? 'bg-lime-200 border-lime-300' : 'bg-lime-50/50 border-lime-100'
+                                isEarned ? 'bg-gradient-to-br from-lime-200 to-emerald-200 border-lime-300' : 'bg-lime-50/50 border-lime-100'
                             } ${
                                 isToday ? 'border-lime-400 ring-2 ring-lime-200 font-black' : ''
                             }`}
@@ -76,7 +76,7 @@ export const StampCard: React.FC<StampCardProps> = ({ stamps, currentDate }) => 
                 })}
             </div>
 
-            <div className="mt-6 text-center text-xs font-bold text-lime-600 bg-lime-100/50 py-2 rounded-full">
+            <div className="mt-6 text-center text-xs font-bold text-lime-700 bg-gradient-to-r from-lime-100 via-emerald-100 to-lime-100 py-2 rounded-full">
                 <p>1日3回の集中でスタンプGETなのだ！✨</p>
             </div>
         </section>

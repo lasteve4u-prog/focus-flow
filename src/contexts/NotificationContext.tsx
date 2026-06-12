@@ -114,12 +114,26 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
             }
         };
     }, []);
+    // 環境によっては resume() やウォームアップ再生が完了しないことがあるため、
+    // 一定時間で諦めてタスク開始をブロックしないようにする
+    const withTimeout = <T,>(promise: Promise<T>, ms: number, label: string): Promise<T | void> => {
+        return Promise.race([
+            promise,
+            new Promise<void>(resolve => {
+                window.setTimeout(() => {
+                    console.warn(`${label} timed out after ${ms}ms, continuing anyway`);
+                    resolve();
+                }, ms);
+            }),
+        ]);
+    };
+
     const unlockAudio = async () => {
         if (!audioContextRef.current) return;
 
         try {
             if (audioContextRef.current.state === 'suspended') {
-                await audioContextRef.current.resume();
+                await withTimeout(audioContextRef.current.resume(), 2000, 'AudioContext.resume()');
                 console.log('AudioContext resumed (unlocked)');
             }
 
@@ -157,7 +171,7 @@ export const NotificationProvider: React.FC<NotificationProviderProps> = ({ chil
                 });
             });
 
-            await Promise.all(warmupPromises);
+            await withTimeout(Promise.all(warmupPromises), 3000, 'Silent Unlock warmup');
             console.log(`Silent Unlock: All ${bufferKeys.length} sounds warmed up and whitelisted.`);
 
         } catch (error) {

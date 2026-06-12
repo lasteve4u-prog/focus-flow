@@ -10,7 +10,7 @@ export const ForcedChecklist: React.FC<ForcedChecklistProps> = ({ onComplete }) 
     return (
         <div className="flex items-center justify-center flex-1 w-full p-4 animate-fade-in">
             <div className="w-full max-w-md bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border-8 border-lime-200">
-                <div className="bg-lime-500 p-8 text-center border-b-4 border-lime-600">
+                <div className="bg-gradient-to-r from-lime-400 via-green-500 to-emerald-500 p-8 text-center border-b-4 border-lime-600">
                     <h2 className="text-3xl font-black text-white tracking-widest uppercase items-center justify-center flex gap-3">
                         🛑 確認なのだ！
                     </h2>
@@ -32,7 +32,7 @@ export const ForcedChecklist: React.FC<ForcedChecklistProps> = ({ onComplete }) 
                             disabled={step1Done}
                             className={`w-full py-4 rounded-full font-black text-lg transition-all ${step1Done
                                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-lime-500 text-white hover:bg-lime-600 shadow-[0_4px_0_rgb(65,130,20)] active:shadow-none active:translate-y-[4px]'
+                                : 'bg-gradient-to-r from-lime-400 to-green-500 text-white hover:from-lime-500 hover:to-green-600 shadow-[0_4px_0_rgb(65,130,20)] active:shadow-none active:translate-y-[4px]'
                                 }`}
                         >
                             {step1Done ? '完了なのだ' : 'リフレッシュに行くのだ！'}
@@ -52,7 +52,7 @@ export const ForcedChecklist: React.FC<ForcedChecklistProps> = ({ onComplete }) 
                             disabled={!step1Done}
                             className={`w-full py-4 rounded-full font-black text-lg transition-all ${!step1Done
                                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                : 'bg-green-600 text-white hover:bg-green-700 shadow-[0_4px_0_rgb(20,80,20)] active:shadow-none active:translate-y-[4px]'
+                                : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-[0_4px_0_rgb(20,80,20)] active:shadow-none active:translate-y-[4px]'
                                 }`}
                         >
                             終わらせてホームに戻るのだ！

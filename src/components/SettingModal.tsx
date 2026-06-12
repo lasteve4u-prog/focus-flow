@@ -58,7 +58,7 @@ export const SettingModal: React.FC<SettingModalProps> = ({
     };
 
     return (
-        <section className="bg-white p-8 rounded-[2rem] shadow-lg border-4 border-lime-200 transition-transform hover:scale-[1.01] duration-300">
+        <section className="bg-gradient-to-br from-white via-lime-50/50 to-emerald-50 p-8 rounded-[2rem] shadow-lg border-4 border-lime-200 transition-transform hover:scale-[1.01] duration-300">
             <h2 className="text-2xl font-black text-green-800 mb-6 flex items-center gap-3">
                 <span className="text-3xl animate-bounce">⏱️</span>
                 <span>セッションを設定するのだ！</span>
@@ -141,7 +141,7 @@ export const SettingModal: React.FC<SettingModalProps> = ({
                     className={`px-10 py-5 text-white text-lg font-black rounded-full transition-all btn-puni
                             ${(!isAudioReady || isStarting || isStartLocked)
                             ? 'bg-gray-400 cursor-not-allowed shadow-none opacity-60'
-                            : 'bg-green-700 hover:bg-green-800'
+                            : 'bg-gradient-to-r from-lime-500 via-green-600 to-emerald-600 hover:from-lime-600 hover:via-green-700 hover:to-emerald-700 shadow-lg shadow-lime-300/50'
                         }`}
                 >
                     {isStartLocked

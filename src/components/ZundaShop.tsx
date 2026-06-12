@@ -354,7 +354,7 @@ const ZundaShop: React.FC<ZundaShopProps> = ({
                       disabled={!canAfford}
                       className={`px-4 py-2 rounded-xl font-black text-sm transition-all btn-puni ${
                         canAfford
-                          ? 'bg-amber-400 hover:bg-amber-500 text-white shadow-[0_3px_0_#b45309]'
+                          ? 'bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-white shadow-[0_3px_0_#b45309]'
                           : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
                       }`}
                     >
@@ -443,7 +443,7 @@ const ZundaShop: React.FC<ZundaShopProps> = ({
                           disabled={!canAfford}
                           className={`px-4 py-2 rounded-xl font-black text-sm transition-all btn-puni ${
                             canAfford
-                              ? 'bg-purple-500 hover:bg-purple-600 text-white shadow-[0_3px_0_#7c3aed]'
+                              ? 'bg-gradient-to-r from-purple-500 to-fuchsia-500 hover:from-purple-600 hover:to-fuchsia-600 text-white shadow-[0_3px_0_#7c3aed]'
                               : 'bg-gray-200 text-gray-400 cursor-not-allowed shadow-none'
                           }`}
                         >

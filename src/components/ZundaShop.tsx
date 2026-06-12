@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 // ============================================================
@@ -33,6 +33,9 @@ interface ZundaShopProps {
 export const DEFAULT_REWARDS: RewardItem[] = [
   { id: 'youtube', label: 'YouTubeを20分見て良い券 📺', cost: 500 },
 ];
+
+// 廃止した既定ご褒美のid。保存済みデータからも自動で取り除く
+export const REMOVED_DEFAULT_REWARD_IDS = ['chips'];
 
 export const VOICE_SHOP_ITEMS: VoiceItem[] = [
   {
@@ -211,6 +214,14 @@ const ZundaShop: React.FC<ZundaShopProps> = ({
   const [rewardDialog, setRewardDialog] = useState<RewardItem | null>(null);
   const [rewards, setRewards] = useLocalStorage<RewardItem[]>('focusflow_user_rewards', DEFAULT_REWARDS);
   const [failFlash, setFailFlash] = useState<string | null>(null); // for "not enough coins" flash
+
+  // 既存ユーザーの保存データから廃止済みの既定ご褒美を取り除く
+  useEffect(() => {
+    if (rewards.some((r) => REMOVED_DEFAULT_REWARD_IDS.includes(r.id))) {
+      setRewards((prev) => prev.filter((r) => !REMOVED_DEFAULT_REWARD_IDS.includes(r.id)));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleRedeem = (item: RewardItem) => {
     const success = onSpendCoins(item.cost);

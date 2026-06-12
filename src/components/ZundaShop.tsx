@@ -31,7 +31,6 @@ interface ZundaShopProps {
 // 定数
 // ============================================================
 export const DEFAULT_REWARDS: RewardItem[] = [
-  { id: 'chips', label: 'ポテチを食べて良い券 🥔', cost: 300 },
   { id: 'youtube', label: 'YouTubeを20分見て良い券 📺', cost: 500 },
 ];
 

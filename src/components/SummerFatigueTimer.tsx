@@ -65,7 +65,7 @@ export const SummerFatigueTimer: React.FC<SummerFatigueTimerProps> = ({ endAt, o
                 </p>
 
                 <div className="relative mb-10">
-                    <div className="text-[7rem] md:text-[9rem] leading-none font-black tracking-[0.2rem] text-orange-500 drop-shadow-sm tabular-nums font-mono">
+                    <div className="text-[7rem] md:text-[9rem] leading-none font-black tracking-[0.2rem] bg-gradient-to-b from-amber-400 to-orange-600 bg-clip-text text-transparent drop-shadow-sm tabular-nums font-mono">
                         {formatTime(timeLeft)}
                     </div>
                     <p className="mt-4 text-orange-600 font-bold text-sm md:text-base">

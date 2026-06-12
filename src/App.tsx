@@ -260,7 +260,15 @@ function AppContent() {
   };
 
   return (
-    <div onClick={handleInteraction} className={`min-h-screen w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-1000 ease-in-out ${view === 'TIMER' ? 'bg-[#ecfccb]' : view === 'SUMMER_FATIGUE' ? 'bg-orange-50' : 'bg-lime-50'}`}>
+    <div onClick={handleInteraction} className={`min-h-screen w-full flex justify-center py-8 font-sans text-green-900 transition-colors duration-1000 ease-in-out bg-gradient-to-b ${view === 'TIMER' ? 'from-lime-100 via-[#ecfccb] to-emerald-100' : view === 'SUMMER_FATIGUE' ? 'from-amber-100 via-orange-50 to-rose-100' : 'from-lime-100 via-lime-50 to-emerald-100'}`}>
+      {/* 背景デコレーション（ずんだ餅カラーの光ブロブ） */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div className={`absolute -top-24 -left-24 w-96 h-96 rounded-full blur-3xl transition-colors duration-1000 ${view === 'SUMMER_FATIGUE' ? 'bg-amber-300/30' : 'bg-lime-300/40'}`} />
+        <div className={`absolute top-1/3 -right-32 w-[28rem] h-[28rem] rounded-full blur-3xl transition-colors duration-1000 ${view === 'SUMMER_FATIGUE' ? 'bg-rose-200/40' : 'bg-emerald-200/40'}`} />
+        <div className={`absolute -bottom-32 left-1/4 w-[30rem] h-[30rem] rounded-full blur-3xl transition-colors duration-1000 ${view === 'SUMMER_FATIGUE' ? 'bg-orange-200/40' : 'bg-yellow-200/40'}`} />
+        <div className="absolute top-1/4 left-1/3 w-64 h-64 rounded-full blur-3xl bg-pink-200/25" />
+      </div>
+
       {/* コインゲットポップアップ（全画面オーバーレイ） */}
       <CoinPopup
         visible={showCoinPopup}

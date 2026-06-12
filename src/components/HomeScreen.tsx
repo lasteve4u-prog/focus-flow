@@ -91,11 +91,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     <div className="flex flex-row items-center justify-center gap-6 flex-wrap">
                         <div className="flex items-center gap-2 sm:gap-3">
                             <span className="text-4xl sm:text-5xl animate-bounce select-none">🫛</span>
-                            <h1 className="text-4xl sm:text-5xl font-extrabold text-lime-600 tracking-widest drop-shadow-md select-none">
+                            <h1 className="text-4xl sm:text-5xl font-extrabold bg-gradient-to-r from-lime-500 via-green-500 to-emerald-500 bg-clip-text text-transparent tracking-widest drop-shadow-md select-none">
                                 FocusFlow
                             </h1>
                         </div>
-                        <div className="bg-lime-100/50 px-5 py-1.5 rounded-full border border-lime-200">
+                        <div className="bg-gradient-to-r from-lime-100 to-emerald-100 px-5 py-1.5 rounded-full border border-lime-200 shadow-sm">
                             <p className="text-lime-700 text-xl font-bold tracking-wider">
                                 {`${dailyLog.date} (${getWeekdayStr(dailyLog.date)})`}
                             </p>
@@ -125,7 +125,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
 
                     <div className="space-y-4 mb-10">
                         {dailyLog.events.sort((a, b) => a.startTime.localeCompare(b.startTime)).map((event) => (
-                            <div key={event.id} className="group bg-white p-5 rounded-[1.5rem] border-2 border-lime-100 shadow-sm flex items-center justify-between hover:border-lime-300 hover:shadow-md transition-all duration-200">
+                            <div key={event.id} className="group bg-gradient-to-r from-white to-lime-50 p-5 rounded-[1.5rem] border-2 border-lime-100 shadow-sm flex items-center justify-between hover:border-lime-300 hover:shadow-md transition-all duration-200">
                                 <div className="flex items-center gap-5 w-full">
                                     <div className="text-sm font-mono font-bold text-lime-600 bg-lime-50 px-4 py-2 rounded-full border border-lime-100">
                                         {event.startTime} - {event.endTime}
@@ -165,7 +165,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     </div>
 
                     {/* Add/Edit Event Form */}
-                    <div className={`bg-white p-6 rounded-[2rem] border-4 shadow-lg transition-colors ${editingId ? 'border-orange-200 bg-orange-50/30' : 'border-lime-200'}`}>
+                    <div className={`p-6 rounded-[2rem] border-4 shadow-lg transition-colors ${editingId ? 'border-orange-200 bg-gradient-to-br from-white to-orange-50' : 'border-lime-200 bg-gradient-to-br from-white via-lime-50/40 to-emerald-50/60'}`}>
                         <h3 className={`text-sm font-bold mb-4 px-2 uppercase tracking-wider ${editingId ? 'text-orange-600' : 'text-lime-600'}`}>
                             {editingId ? '✏️ 予定を編集するのだ' : '✨ 新しい予定を追加するのだ'}
                         </h3>
@@ -212,7 +212,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                             ) : (
                                 <button
                                     type="submit"
-                                    className="px-6 py-3 bg-green-700 text-white rounded-full text-sm font-bold hover:bg-green-800 shadow-md flex-shrink-0 whitespace-nowrap w-full md:w-auto btn-puni"
+                                    className="px-6 py-3 bg-gradient-to-r from-lime-500 to-green-600 text-white rounded-full text-sm font-bold hover:from-lime-600 hover:to-green-700 shadow-md flex-shrink-0 whitespace-nowrap w-full md:w-auto btn-puni"
                                 >
                                     追加するのだ
                                 </button>
@@ -239,7 +239,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                                 const praise = praises[praiseIndex];
 
                                 return (
-                                    <div key={task.id} className="bg-lime-100/50 p-5 rounded-2xl border border-lime-200 flex flex-col gap-3 relative hover:shadow-sm transition-shadow">
+                                    <div key={task.id} className="bg-gradient-to-br from-lime-100/70 to-emerald-100/50 p-5 rounded-2xl border border-lime-200 flex flex-col gap-3 relative hover:shadow-sm transition-shadow">
 
                                         <div className="flex items-center justify-between">
                                             <div>

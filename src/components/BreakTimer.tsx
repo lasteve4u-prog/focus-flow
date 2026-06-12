@@ -71,7 +71,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish, durationMinute
     };
 
     return (
-        <div className="flex flex-col items-center justify-center flex-1 w-full bg-green-50 text-green-900 p-8 rounded-[2rem] shadow-2xl animate-fade-in border-4 border-green-200">
+        <div className="flex flex-col items-center justify-center flex-1 w-full bg-gradient-to-b from-emerald-50 via-green-50 to-teal-100 text-green-900 p-8 rounded-[2rem] shadow-2xl animate-fade-in border-4 border-green-200">
             <div className="w-full max-w-2xl flex flex-col items-center text-center">
                 <div className="mb-8">
                     <span className="text-6xl animate-bounce inline-block mb-4">🍵</span>
@@ -80,7 +80,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish, durationMinute
                 </div>
 
                 <div className="relative mb-12">
-                    <div className="text-[8rem] md:text-[10rem] leading-none font-black tracking-[0.2rem] text-green-500 drop-shadow-sm tabular-nums font-mono">
+                    <div className="text-[8rem] md:text-[10rem] leading-none font-black tracking-[0.2rem] bg-gradient-to-b from-emerald-400 to-teal-600 bg-clip-text text-transparent drop-shadow-sm tabular-nums font-mono">
                         {formatTime(timeLeft)}
                     </div>
                 </div>
@@ -88,7 +88,7 @@ export const BreakTimer: React.FC<BreakTimerProps> = ({ onFinish, durationMinute
                 {timeLeft === 0 && (
                     <button
                         onClick={handleFinish}
-                        className="px-10 py-5 bg-green-500 hover:bg-green-600 text-white rounded-full font-black text-xl shadow-[0_4px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px] transition-all animate-bounce"
+                        className="px-10 py-5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-full font-black text-xl shadow-[0_4px_0_rgb(34,197,94)] active:shadow-none active:translate-y-[4px] transition-all animate-bounce"
                     >
                         休憩を終えるのだ！
                     </button>

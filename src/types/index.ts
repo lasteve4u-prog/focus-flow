@@ -1,8 +1,8 @@
 export interface Event {
   id: string;
   title: string;
-  startTime: string; // "HH:mm"
-  endTime: string;   // "HH:mm"
+  focusDuration: number; // 集中時間（分）
+  breakDuration: number; // 休憩時間（分）
 }
 
 export interface Subtask {

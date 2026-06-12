@@ -55,7 +55,7 @@ function AppContent() {
   }, [currentDate]);
 
   const [view, setView] = useState<ViewState>('HOME');
-  const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; breakDuration: number; interruptions?: string[]; subtasks?: Subtask[] } | null>(null);
+  const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; breakDuration: number; interruptions?: string[]; subtasks?: Subtask[]; sourceEventId?: string } | null>(null);
 
   // ずんだコイン制度の状態
   const [zundaCoins, setZundaCoins] = useLocalStorage<number>('zundaCoins', 0);
@@ -116,17 +116,17 @@ function AppContent() {
     await unlockAudio();
   };
 
-  const handleAddEvent = (title: string, start: string, end: string) => {
+  const handleAddEvent = (title: string, focusDuration: number, breakDuration: number) => {
     const newEvent: Event = {
       id: crypto.randomUUID(),
       title,
-      startTime: start,
-      endTime: end
+      focusDuration,
+      breakDuration
     };
     setDailyLog(prev => ({ ...prev, events: [...prev.events, newEvent] }));
   };
 
-  const startTask = async (title: string, duration: number, breakDuration: number, subtasks?: Subtask[]) => {
+  const startTask = async (title: string, duration: number, breakDuration: number, subtasks?: Subtask[], sourceEventId?: string) => {
     if (isSummerFatigueActive) return;
 
     // Explicitly unlock audio on start to ensure context is ready
@@ -138,7 +138,7 @@ function AppContent() {
       playAlert('start');
     }, 100);
 
-    setCurrentTask({ title, duration, breakDuration, subtasks });
+    setCurrentTask({ title, duration, breakDuration, subtasks, sourceEventId });
     // Also record start of task logic if needed
     setView('TIMER');
   };
@@ -170,7 +170,13 @@ function AppContent() {
           : undefined,
         subtasks: currentTask.subtasks
       };
-      setDailyLog(prev => ({ ...prev, tasks: [...prev.tasks, newTask] }));
+      const sourceEventId = currentTask.sourceEventId;
+      setDailyLog(prev => ({
+        ...prev,
+        tasks: [...prev.tasks, newTask],
+        // 完走したTo Doはリストから削除する
+        events: sourceEventId ? prev.events.filter(ev => ev.id !== sourceEventId) : prev.events
+      }));
       taskForStamp = newTask;
     }
 

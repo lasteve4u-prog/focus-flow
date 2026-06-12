@@ -7,14 +7,12 @@ export const exportToMarkdown = (dailyLog: DailyLog) => {
     lines.push(`# ${date}`);
     lines.push('');
 
-    lines.push('## Events');
+    lines.push('## To Do');
     if (events.length === 0) {
-        lines.push('- No events recorded.');
+        lines.push('- No to-dos recorded.');
     } else {
-        // Sort events by start time
-        const sortedEvents = [...events].sort((a, b) => a.startTime.localeCompare(b.startTime));
-        sortedEvents.forEach(evt => {
-            lines.push(`- ${evt.startTime} - ${evt.endTime} : ${evt.title}`);
+        events.forEach(evt => {
+            lines.push(`- [ ] ${evt.title} (集中 ${evt.focusDuration}分 / 休憩 ${evt.breakDuration}分)`);
         });
     }
     lines.push('');

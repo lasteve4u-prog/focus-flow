@@ -16,10 +16,10 @@ const getWeekdayStr = (dateStr: string) => {
 
 interface HomeScreenProps {
     dailyLog: DailyLog;
-    onAddEvent: (title: string, start: string, end: string) => void;
+    onAddEvent: (title: string, focusDuration: number, breakDuration: number) => void;
     onUpdateEvent: (event: Event) => void;
     onDeleteEvent: (id: string) => void;
-    onStartTask: (title: string, duration: number, breakDuration: number, subtasks?: Subtask[]) => Promise<void>; // Updated to Promise
+    onStartTask: (title: string, duration: number, breakDuration: number, subtasks?: Subtask[], sourceEventId?: string) => Promise<void>; // Updated to Promise
     onDeleteTask: (taskId: string) => void;
     isAudioReady: boolean;
     stamps: Record<string, boolean>;
@@ -34,17 +34,13 @@ interface HomeScreenProps {
     isStartLocked: boolean;
 }
 
-const calcEventDuration = (startTime: string, endTime: string): number => {
-    const [sh, sm] = startTime.split(':').map(Number);
-    const [eh, em] = endTime.split(':').map(Number);
-    const diff = (eh * 60 + em) - (sh * 60 + sm);
-    return diff > 0 ? diff : 25;
-};
+const FOCUS_OPTIONS = [15, 20, 25, 30, 45, 60, 90];
+const BREAK_OPTIONS = [5, 10, 15];
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice, zundaPower, isStartLocked }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
-    const [startTime, setStartTime] = useState('09:00');
-    const [endTime, setEndTime] = useState('10:00');
+    const [focusDuration, setFocusDuration] = useState(25);
+    const [breakDuration, setBreakDuration] = useState(5);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [convertingEvent, setConvertingEvent] = useState<Event | null>(null);
 
@@ -56,30 +52,30 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
             onUpdateEvent({
                 id: editingId,
                 title: newEventTitle,
-                startTime,
-                endTime
+                focusDuration,
+                breakDuration
             });
             setEditingId(null);
         } else {
-            onAddEvent(newEventTitle, startTime, endTime);
+            onAddEvent(newEventTitle, focusDuration, breakDuration);
         }
         setNewEventTitle('');
-        // Reset time only on add, or keep it? Let's reset for fresh entry or clear form.
-        setStartTime('09:00');
-        setEndTime('10:00');
+        // Reset durations for a fresh entry
+        setFocusDuration(25);
+        setBreakDuration(5);
     };
 
     const handleEditClick = (event: Event) => {
         setNewEventTitle(event.title);
-        setStartTime(event.startTime);
-        setEndTime(event.endTime);
+        setFocusDuration(event.focusDuration);
+        setBreakDuration(event.breakDuration);
         setEditingId(event.id);
     };
 
     const handleCancelEdit = () => {
         setNewEventTitle('');
-        setStartTime('09:00');
-        setEndTime('10:00');
+        setFocusDuration(25);
+        setBreakDuration(5);
         setEditingId(null);
     };
 
@@ -119,16 +115,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 <section>
                     <div className="flex items-center justify-between mb-6 px-2">
                         <h2 className="text-2xl font-black text-green-800 flex items-center gap-2">
-                            <span>📅</span> 今日の予定なのだ
+                            <span>📅</span> 今日のTo Doなのだ
                         </h2>
                     </div>
 
                     <div className="space-y-4 mb-10">
-                        {dailyLog.events.sort((a, b) => a.startTime.localeCompare(b.startTime)).map((event) => (
+                        {dailyLog.events.map((event) => (
                             <div key={event.id} className="group bg-gradient-to-r from-white to-lime-50 p-5 rounded-[1.5rem] border-2 border-lime-100 shadow-sm flex items-center justify-between hover:border-lime-300 hover:shadow-md transition-all duration-200">
                                 <div className="flex items-center gap-5 w-full">
-                                    <div className="text-sm font-mono font-bold text-lime-600 bg-lime-50 px-4 py-2 rounded-full border border-lime-100">
-                                        {event.startTime} - {event.endTime}
+                                    <div className="flex flex-col gap-1 flex-shrink-0">
+                                        <span className="text-xs font-bold text-lime-600 bg-lime-50 px-3 py-1 rounded-full border border-lime-100 whitespace-nowrap">⏱️ {event.focusDuration}分</span>
+                                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 whitespace-nowrap">☕ {event.breakDuration}分</span>
                                     </div>
                                     <span className="font-bold text-green-800 text-lg truncate flex-1">{event.title}</span>
                                 </div>
@@ -159,7 +156,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                         ))}
                         {dailyLog.events.length === 0 && (
                             <div className="text-center p-10 border-4 border-dashed border-lime-200 rounded-[2rem] text-lime-500 bg-lime-50/50">
-                                <p className="font-bold">予定はまだないのだ 🌱</p>
+                                <p className="font-bold">To Doはまだないのだ 🌱</p>
                             </div>
                         )}
                     </div>
@@ -167,27 +164,38 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     {/* Add/Edit Event Form */}
                     <div className={`p-6 rounded-[2rem] border-4 shadow-lg transition-colors ${editingId ? 'border-orange-200 bg-gradient-to-br from-white to-orange-50' : 'border-lime-200 bg-gradient-to-br from-white via-lime-50/40 to-emerald-50/60'}`}>
                         <h3 className={`text-sm font-bold mb-4 px-2 uppercase tracking-wider ${editingId ? 'text-orange-600' : 'text-lime-600'}`}>
-                            {editingId ? '✏️ 予定を編集するのだ' : '✨ 新しい予定を追加するのだ'}
+                            {editingId ? '✏️ To Doを編集するのだ' : '✨ 新しいTo Doを追加するのだ'}
                         </h3>
                         <form onSubmit={handleSubmitEvent} className="flex flex-col gap-4 flex-wrap md:items-center">
                             <div className="flex gap-2 flex-shrink-0 w-full md:w-auto">
-                                <input
-                                    type="time"
-                                    value={startTime}
-                                    onChange={(e) => setStartTime(e.target.value)}
-                                    className="p-3 border-2 border-lime-100 rounded-2xl text-sm font-bold text-green-800 focus:ring-4 focus:ring-lime-100 focus:border-lime-300 outline-none transition bg-lime-50 w-full md:w-auto"
-                                />
-                                <span className="self-center text-lime-400 font-bold text-lg">~</span>
-                                <input
-                                    type="time"
-                                    value={endTime}
-                                    onChange={(e) => setEndTime(e.target.value)}
-                                    className="p-3 border-2 border-lime-100 rounded-2xl text-sm font-bold text-green-800 focus:ring-4 focus:ring-lime-100 focus:border-lime-300 outline-none transition bg-lime-50 w-full md:w-auto"
-                                />
+                                <label className="flex items-center gap-2 text-sm font-bold text-green-800 bg-lime-50 border-2 border-lime-100 rounded-2xl px-3 py-2 w-full md:w-auto">
+                                    <span className="whitespace-nowrap">⏱️ 集中</span>
+                                    <select
+                                        value={focusDuration}
+                                        onChange={(e) => setFocusDuration(Number(e.target.value))}
+                                        className="bg-transparent outline-none font-bold text-green-800 flex-1 md:flex-none"
+                                    >
+                                        {FOCUS_OPTIONS.map((m) => (
+                                            <option key={m} value={m}>{m}分</option>
+                                        ))}
+                                    </select>
+                                </label>
+                                <label className="flex items-center gap-2 text-sm font-bold text-green-800 bg-emerald-50 border-2 border-emerald-100 rounded-2xl px-3 py-2 w-full md:w-auto">
+                                    <span className="whitespace-nowrap">☕ 休憩</span>
+                                    <select
+                                        value={breakDuration}
+                                        onChange={(e) => setBreakDuration(Number(e.target.value))}
+                                        className="bg-transparent outline-none font-bold text-green-800 flex-1 md:flex-none"
+                                    >
+                                        {BREAK_OPTIONS.map((m) => (
+                                            <option key={m} value={m}>{m}分</option>
+                                        ))}
+                                    </select>
+                                </label>
                             </div>
                             <input
                                 type="text"
-                                placeholder="例: ミーティング"
+                                placeholder="例: レポート作成"
                                 value={newEventTitle}
                                 onChange={(e) => setNewEventTitle(e.target.value)}
                                 className="flex-1 p-3 border-2 border-lime-100 rounded-2xl text-sm font-bold text-green-800 focus:ring-4 focus:ring-lime-100 focus:border-lime-300 outline-none transition bg-lime-50 placeholder-lime-300 min-w-[200px]"
@@ -322,7 +330,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                 <div className="w-full max-w-md" onClick={(e) => e.stopPropagation()}>
                     <div className="mb-3 flex items-center justify-between px-2">
                         <p className="text-white font-bold text-sm opacity-80">
-                            📅 {convertingEvent.startTime} - {convertingEvent.endTime}
+                            ⏱️ 集中 {convertingEvent.focusDuration}分 / ☕ 休憩 {convertingEvent.breakDuration}分
                         </p>
                         <button
                             onClick={() => setConvertingEvent(null)}
@@ -332,10 +340,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                     <SettingModal
                         key={convertingEvent.id}
                         initialTitle={convertingEvent.title}
-                        initialFocusDuration={calcEventDuration(convertingEvent.startTime, convertingEvent.endTime)}
-                        initialBreakDuration={5}
+                        initialFocusDuration={convertingEvent.focusDuration}
+                        initialBreakDuration={convertingEvent.breakDuration}
                         onStart={async (focusDuration, breakDuration, title, subtasks) => {
-                            await onStartTask(title, focusDuration, breakDuration, subtasks);
+                            // 完走したときに削除できるよう、元のTo Do idを渡す
+                            await onStartTask(title, focusDuration, breakDuration, subtasks, convertingEvent.id);
                             setConvertingEvent(null);
                         }}
                         isAudioReady={isAudioReady}

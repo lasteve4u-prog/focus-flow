@@ -30,6 +30,8 @@ interface HomeScreenProps {
     onSpendCoins: (amount: number) => boolean;
     onUnlockVoice: (voiceId: string) => void;
     onSelectVoice: (voiceId: string) => void;
+    onResetZundaPower: () => void;
+
     zundaPower: number;
     isStartLocked: boolean;
 }
@@ -37,7 +39,7 @@ interface HomeScreenProps {
 const FOCUS_OPTIONS = [15, 20, 25, 30, 45, 60, 90];
 const BREAK_OPTIONS = [5, 10, 15];
 
-export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice, zundaPower, isStartLocked }) => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, onUpdateEvent, onDeleteEvent, onStartTask, onDeleteTask, isAudioReady, stamps, zundaCoins, unlockedVoices, selectedVoice, onSpendCoins, onUnlockVoice, onSelectVoice, onResetZundaPower, zundaPower, isStartLocked }) => {
     const [newEventTitle, setNewEventTitle] = useState('');
     const [focusDuration, setFocusDuration] = useState(25);
     const [breakDuration, setBreakDuration] = useState(5);
@@ -83,7 +85,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
         <>
         <div className="w-full">
            <div className="w-full space-y-4 mt-2 md:mt-4">
-           <header className="flex flex-col items-center mb-2 mt-2 gap-4 animate-fade-in">
+                <header className="flex flex-col items-center mb-2 mt-2 gap-4 animate-fade-in">
                     <div className="flex flex-row items-center justify-center gap-6 flex-wrap">
                         <div className="flex items-center gap-2 sm:gap-3">
                             <span className="text-4xl sm:text-5xl animate-bounce select-none">🫛</span>
@@ -98,6 +100,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ dailyLog, onAddEvent, on
                         </div>
                     </div>
                     <ZundaPowerDisplay power={zundaPower} size="lg" />
+            <button
+              onClick={() => {
+                if (confirm('本当に枝豆をリセットするのだ？')) {
+                  onResetZundaPower();
+                }
+              }}
+              className="ml-2 p-2 text-sm bg-lime-200 rounded-full hover:bg-lime-300 transition-colors"
+              title="枝豆をおかわりするのだ！"
+            >
+              🔄
+            </button>
                 </header>
 
                 {/* Task Starter Section (Refactored to SettingModal) */}

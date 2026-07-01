@@ -54,6 +54,20 @@ function AppContent() {
     };
   }, [currentDate]);
 
+  // ずんだパワー（過集中防止スタミナ）
+  const [zundaPower, setZundaPower] = useLocalStorage<number>('zundaPower', MAX_ZUNDA_POWER);
+  // 最後にリセットした日付を保持（ローカルストレージ）
+  const [zundaPowerLastDate, setZundaPowerLastDate] = useLocalStorage<string>('zundaPowerLastDate', getLocalDateString());
+  const [summerFatigueEndAt, setSummerFatigueEndAt] = useLocalStorage<number | null>('summerFatigueEndAt', null);
+
+  // ずんだパワーを日跨ぎでリセット
+  useEffect(() => {
+    if (zundaPowerLastDate !== currentDate) {
+      setZundaPower(MAX_ZUNDA_POWER);
+      setZundaPowerLastDate(currentDate);
+    }
+  }, [currentDate, zundaPowerLastDate, setZundaPower, setZundaPowerLastDate]);
+
   const [view, setView] = useState<ViewState>('HOME');
   const [currentTask, setCurrentTask] = useState<{ title: string; duration: number; breakDuration: number; interruptions?: string[]; subtasks?: Subtask[]; sourceEventId?: string } | null>(null);
 
@@ -62,10 +76,6 @@ function AppContent() {
   const [unlockedVoices, setUnlockedVoices] = useLocalStorage<string[]>('unlockedVoices', ['default']);
   const [selectedVoice, setSelectedVoice] = useLocalStorage<string>('selectedVoice', 'default');
   const [showCoinPopup, setShowCoinPopup] = useState(false);
-
-  // ずんだパワー（過集中防止スタミナ）
-  const [zundaPower, setZundaPower] = useLocalStorage<number>('zundaPower', MAX_ZUNDA_POWER);
-  const [summerFatigueEndAt, setSummerFatigueEndAt] = useLocalStorage<number | null>('summerFatigueEndAt', null);
 
   const isSummerFatigueActive =
     summerFatigueEndAt !== null && Date.now() < summerFatigueEndAt;
@@ -97,6 +107,10 @@ function AppContent() {
       colors: ['#fb923c', '#fbbf24', '#84cc16', '#ffffff'],
     });
   }, [setZundaPower, setSummerFatigueEndAt]);
+
+  const handleResetZundaPower = useCallback(() => {
+    setZundaPower(MAX_ZUNDA_POWER);
+  }, [setZundaPower]);
 
   // 夏バテ状態の復元（リロード・日跨ぎ対応）
   useEffect(() => {
@@ -299,6 +313,7 @@ function AppContent() {
             onSpendCoins={handleSpendCoins}
             onUnlockVoice={handleUnlockVoice}
             onSelectVoice={setSelectedVoice}
+            onResetZundaPower={handleResetZundaPower}
             zundaPower={zundaPower}
             isStartLocked={isSummerFatigueActive}
           />
